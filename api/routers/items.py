@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, HTTPException
 from queries.items import (
     ItemsRepository,
     ItemIn,
     ItemOut,
     ItemListOut,
+    DataStructureException,
+    InvalidCollectionIdException,
+    RequiredFieldException,
 )
 
 
@@ -16,7 +19,14 @@ def create_item(
     data: ItemIn,
     repo: ItemsRepository = Depends(),
 ):
-    return repo.create_item(collection_id, data)
+    try:
+        return repo.create_item(collection_id, data)
+    except InvalidCollectionIdException:
+        raise HTTPException(status_code=404, detail='invalid collection_id')
+    except DataStructureException:
+        raise HTTPException(status_code=404, detail='invalid data structure')
+    except RequiredFieldException:
+        raise HTTPException(status_code=404, detail='required field violation')
 
 
 @router.get("/collections/{collection_id}/items/{item_id}", response_model=ItemOut, tags=["items"])
@@ -39,6 +49,7 @@ def delete_item(
 def update_item(
     item_id: str,
     item: ItemIn,
+    collection_id: str,
     repo: ItemsRepository = Depends()
 ):
     return repo.update_item(item_id, item)
