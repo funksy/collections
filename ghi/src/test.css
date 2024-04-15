@@ -1,0 +1,40 @@
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+}
+
+.left-nav {
+    background-color: purple;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.logo {
+    background-color: red;
+    border-radius: 25px;
+    height: 100px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.collections-view {
+    background-color: yellow;
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.collections-grid {
+    background-color: blue;
+}
+
+.collection-card {
+    background-color: aqua;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    border: 2px solid red;
+}
