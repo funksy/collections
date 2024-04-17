@@ -18,27 +18,21 @@ def create_collection(
     return repo.create_collection(collection)
 
 
-@router.get("/collections/{collection_id}", response_model=CollectionOut, tags=["collections"])
-def get_collection(
-    collection_id: str,
-    repo: CollectionRepository = Depends()
-):
+@router.get(
+    "/collections/{collection_id}", response_model=CollectionOut, tags=["collections"]
+)
+def get_collection(collection_id: str, repo: CollectionRepository = Depends()):
     return repo.get_collection(collection_id)
 
 
 @router.delete("/collections/{collection_id}", tags=["collections"])
-def delete_collection(
-    collection_id: str,
-    repo: CollectionRepository = Depends()
-):
+def delete_collection(collection_id: str, repo: CollectionRepository = Depends()):
     return repo.delete_collection(collection_id)
 
 
 @router.put("/collections/{collection_id}", tags=["collections"])
 def update_collection(
-    collection_id: str,
-    collection: CollectionIn,
-    repo: CollectionRepository = Depends()
+    collection_id: str, collection: CollectionIn, repo: CollectionRepository = Depends()
 ):
     return repo.update_collection(collection_id, collection)
 

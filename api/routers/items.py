@@ -13,7 +13,9 @@ from queries.items import (
 router = APIRouter()
 
 
-@router.post("/collections/{collection_id}/items", response_model=ItemOut, tags=["items"])
+@router.post(
+    "/collections/{collection_id}/items", response_model=ItemOut, tags=["items"]
+)
 def create_item(
     collection_id: str,
     data: ItemIn,
@@ -22,42 +24,36 @@ def create_item(
     try:
         return repo.create_item(collection_id, data)
     except InvalidCollectionIdException:
-        raise HTTPException(status_code=404, detail='invalid collection_id')
+        raise HTTPException(status_code=404, detail="invalid collection_id")
     except DataStructureException:
-        raise HTTPException(status_code=404, detail='invalid data structure')
+        raise HTTPException(status_code=404, detail="invalid data structure")
     except RequiredFieldException:
-        raise HTTPException(status_code=404, detail='required field violation')
+        raise HTTPException(status_code=404, detail="required field violation")
 
 
-@router.get("/collections/{collection_id}/items/{item_id}", response_model=ItemOut, tags=["items"])
-def get_item(
-    item_id: str,
-    repo: ItemsRepository = Depends()
-):
+@router.get(
+    "/collections/{collection_id}/items/{item_id}",
+    response_model=ItemOut,
+    tags=["items"],
+)
+def get_item(item_id: str, repo: ItemsRepository = Depends()):
     return repo.get_item(item_id)
 
 
 @router.delete("/collections/{collection_id}/items/{item_id}", tags=["items"])
-def delete_item(
-    item_id: str,
-    repo: ItemsRepository = Depends()
-):
+def delete_item(item_id: str, repo: ItemsRepository = Depends()):
     return repo.delete_item(item_id)
 
 
 @router.put("/collections/{collection_id}/items/{item_id}", tags=["items"])
 def update_item(
-    item_id: str,
-    item: ItemIn,
-    collection_id: str,
-    repo: ItemsRepository = Depends()
+    item_id: str, item: ItemIn, collection_id: str, repo: ItemsRepository = Depends()
 ):
     return repo.update_item(item_id, item)
 
 
-@router.get("/collections/{collection_id}/items", response_model=ItemListOut, tags=["items"])
-def get_list_of_items(
-    collection_id: str,
-    repo: ItemsRepository = Depends()
-):
+@router.get(
+    "/collections/{collection_id}/items", response_model=ItemListOut, tags=["items"]
+)
+def get_list_of_items(collection_id: str, repo: ItemsRepository = Depends()):
     return repo.get_list_of_items(collection_id)

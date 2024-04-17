@@ -8,6 +8,7 @@ services:
       context: ./api
       dockerfile: Dockerfile.dev
     environment:
+      JWT_SECRET: dzW0qTzFAyo1XvRyvArYUxUYoZTCtxiITGfOYKM6qzrsRYGM8Zuc40BaKRTMCZj7
       DATABASE_URL: mongodb://root:example@mongo:27017/
       PORT: 8000
     ports:

@@ -1,14 +1,13 @@
 import pymongo
 import os
 from fastapi import HTTPException, Depends
-from fastapi.responses import JSONResponse
 from bson.objectid import ObjectId
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel
 from typing import List
 from queries.collections import CollectionRepository
 
 
-client = pymongo.MongoClient(os.environ.get('DATABASE_URL'))
+client = pymongo.MongoClient(os.environ.get("DATABASE_URL"))
 db = client.collections_db
 
 
@@ -47,14 +46,17 @@ class ItemsRepository:
     def __init__(self, collections_repo: CollectionRepository = Depends()):
         self.collections_repo = collections_repo
 
-
     def check_fields(self, item: ItemIn, collection_id: str):
         try:
-            collection = self.collections_repo.get_collection(collection_id=collection_id)
+            collection = self.collections_repo.get_collection(
+                collection_id=collection_id
+            )
         except:
             raise InvalidCollectionIdException()
         collection_field_names = [field.name for field in collection.fields]
-        collection_required_fields = [field.name for field in collection.fields if field.required == True]
+        collection_required_fields = [
+            field.name for field in collection.fields if field.required == True
+        ]
         item_field_names = [field.name for field in item.fields]
         for field in item_field_names:
             if field not in collection_field_names:
@@ -63,18 +65,16 @@ class ItemsRepository:
             if field not in item_field_names:
                 raise RequiredFieldException()
 
-
     def create_item(self, collection_id: str, item: ItemIn) -> ItemOut:
         self.check_fields(item=item, collection_id=collection_id)
         new_item = {
             "name": item.name,
             "fields": [field.dict() for field in item.fields],
-            "collection_id": collection_id
+            "collection_id": collection_id,
         }
         db.items.insert_one(new_item)
         new_item["id"] = str(new_item["_id"])
         return ItemOut(**new_item)
-
 
     def get_item(self, item_id: str) -> ItemOut:
         try:
@@ -84,7 +84,6 @@ class ItemsRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
 
-
     def delete_item(self, item_id: str):
         try:
             result = db.items.delete_one({"_id": ObjectId(item_id)})
@@ -93,19 +92,19 @@ class ItemsRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
 
-
     def update_item(self, item_id: str, item: ItemIn, collection_id: str):
         self.check_fields(item=item, collection_id=collection_id)
         try:
             updated_item = {
-                "name": item.name, 
-                "fields": [field.dict() for field in item.fields]
+                "name": item.name,
+                "fields": [field.dict() for field in item.fields],
             }
-            result = db.items.update_one({"_id": ObjectId(item_id)}, {"$set": updated_item})
+            result = db.items.update_one(
+                {"_id": ObjectId(item_id)}, {"$set": updated_item}
+            )
             return self.get_item(item_id)
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
-
 
     def get_list_of_items(self, collection_id) -> ItemListOut:
         items = []
