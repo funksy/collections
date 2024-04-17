@@ -51,19 +51,15 @@ class UserRepository:
             user["id"] = str(user["_id"])
             return UserOut(**user)
         except:
-            raise HTTPException(status_code=404, detail="invalid credentials")
+            raise HTTPException(status_code=404, detail="invalid username")
 
     def get_current_user(self, token: str):
-        print('****************************', token)
-        # try:
-        #     payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-        #     print('*******************************************', payload)
-        #     user = self.get_user(payload.get('username'))
-        #     user["id"] = str(user["_id"])
-        # except:
-        #     raise HTTPException(status_code=401, detail='unauthorized')
-        # return UserOut(**user)
-        return {'message': token}
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+            user = self.get_user(payload['username'])
+        except:
+            raise HTTPException(status_code=401, detail='unauthorized')
+        return user
 
     def generate_token(self, form_data: OAuth2PasswordRequestForm):
         user = self.authenticate_user(form_data.username, form_data.password)

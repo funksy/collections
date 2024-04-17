@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Response
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from queries.collections import (
     CollectionRepository,
     CollectionIn,
@@ -8,12 +9,14 @@ from queries.collections import (
 
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post("/collections", response_model=CollectionOut, tags=["collections"])
 def create_collection(
     collection: CollectionIn,
     repo: CollectionRepository = Depends(),
+    token: str = Depends(oauth2_scheme)
 ):
     return repo.create_collection(collection)
 

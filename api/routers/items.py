@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Response, HTTPException
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from queries.items import (
     ItemsRepository,
     ItemIn,
@@ -11,6 +12,7 @@ from queries.items import (
 
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post(
@@ -20,6 +22,7 @@ def create_item(
     collection_id: str,
     data: ItemIn,
     repo: ItemsRepository = Depends(),
+    # token: str = Depends(oauth2_scheme)
 ):
     try:
         return repo.create_item(collection_id, data)
