@@ -3,11 +3,11 @@ from routers import collections, items, users
 from tags import tags_metadata
 
 app = FastAPI(
-    title='Collections',
-    description='A place to track and share things you collect',
+    title="Collections",
+    description="A place to track and share things you collect",
     contact={
-        'name': 'John Lukich',
-        'url': 'http://john-lukich.mooo.com',
+        "name": "John Lukich",
+        "url": "http://john-lukich.mooo.com",
     },
     openapi_tags=tags_metadata,
 )
