@@ -24,6 +24,11 @@ class UserOut(BaseModel):
     username: str
 
 
+class UserToken(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class UserRepository:
     def authenticate_user(self, username: str, password: str) -> bool | UserOut:
         user = db.users.find_one({"username": username})
@@ -35,8 +40,11 @@ class UserRepository:
         return UserOut(**user)
 
     def create_user(self, user: UserIn) -> UserOut:
-        if db.users.find_one({"username": user.username}) or user.username == 'me':
-            raise HTTPException(status_code=400, detail='cannot create an account with those credentials')
+        if db.users.find_one({"username": user.username}) or user.username == "me":
+            raise HTTPException(
+                status_code=400,
+                detail="cannot create an account with those credentials",
+            )
         new_user = {
             "username": user.username,
             "password_hash": bcrypt.hash(user.password),
@@ -53,18 +61,19 @@ class UserRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid username")
 
-    def get_current_user(self, token: str):
+    def get_current_user(self, token: str) -> UserOut:
         try:
-            payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-            user = self.get_user(payload['username'])
+            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+            user = self.get_user(payload["username"])
         except:
-            raise HTTPException(status_code=401, detail='unauthorized')
+            raise HTTPException(status_code=401, detail="unauthorized")
         return user
 
-    def generate_token(self, form_data: OAuth2PasswordRequestForm):
+    def generate_token(self, form_data: OAuth2PasswordRequestForm) -> UserToken:
         user = self.authenticate_user(form_data.username, form_data.password)
         if not user:
             raise HTTPException(status_code=401, detail="invalid credentials")
 
         token = jwt.encode(user.dict(), JWT_SECRET)
-        return {"access_token": token, "token_type": "bearer"}
+        user_token = {"access_token": token, "token_type": "bearer"}
+        return UserToken(**user_token)

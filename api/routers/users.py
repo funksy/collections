@@ -4,23 +4,23 @@ from queries.users import (
     UserRepository,
     UserIn,
     UserOut,
+    UserToken,
 )
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@router.post("/token", tags=["users"])
+@router.post("/token", response_model=UserToken, tags=["users"])
 def generate_token(
     repo: UserRepository = Depends(), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     return repo.generate_token(form_data)
 
 
-@router.get('/token/current', tags=['users'])
+@router.get("/token/current", response_model=UserOut, tags=["users"])
 async def get_current_user(
-    repo: UserRepository = Depends(),
-    token: str = Depends(oauth2_scheme)
+    repo: UserRepository = Depends(), token: str = Depends(oauth2_scheme)
 ):
     return repo.get_current_user(token)
 

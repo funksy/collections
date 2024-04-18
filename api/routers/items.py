@@ -22,7 +22,7 @@ def create_item(
     collection_id: str,
     data: ItemIn,
     repo: ItemsRepository = Depends(),
-    # token: str = Depends(oauth2_scheme)
+    token: str = Depends(oauth2_scheme),
 ):
     try:
         return repo.create_item(collection_id, data)
@@ -39,18 +39,30 @@ def create_item(
     response_model=ItemOut,
     tags=["items"],
 )
-def get_item(item_id: str, repo: ItemsRepository = Depends()):
+def get_item(
+    item_id: str,
+    repo: ItemsRepository = Depends(),
+    token: str = Depends(oauth2_scheme),
+):
     return repo.get_item(item_id)
 
 
 @router.delete("/collections/{collection_id}/items/{item_id}", tags=["items"])
-def delete_item(item_id: str, repo: ItemsRepository = Depends()):
+def delete_item(
+    item_id: str,
+    repo: ItemsRepository = Depends(),
+    token: str = Depends(oauth2_scheme),
+):
     return repo.delete_item(item_id)
 
 
 @router.put("/collections/{collection_id}/items/{item_id}", tags=["items"])
 def update_item(
-    item_id: str, item: ItemIn, collection_id: str, repo: ItemsRepository = Depends()
+    item_id: str,
+    item: ItemIn,
+    collection_id: str,
+    repo: ItemsRepository = Depends(),
+    token: str = Depends(oauth2_scheme),
 ):
     return repo.update_item(item_id, item)
 
@@ -58,5 +70,9 @@ def update_item(
 @router.get(
     "/collections/{collection_id}/items", response_model=ItemListOut, tags=["items"]
 )
-def get_list_of_items(collection_id: str, repo: ItemsRepository = Depends()):
+def get_list_of_items(
+    collection_id: str,
+    repo: ItemsRepository = Depends(),
+    token: str = Depends(oauth2_scheme),
+):
     return repo.get_list_of_items(collection_id)
