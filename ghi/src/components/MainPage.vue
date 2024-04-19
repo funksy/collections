@@ -1,7 +1,12 @@
 <script setup>
-import Title from './Title.vue'
-import CollectionGrid from './CollectionGrid.vue'
-import NewCollection from './NewCollection.vue'
+import router from '../router';
+import { useUser } from '../store/UserStore';
+
+const userStore = useUser()
+
+if (!userStore.isLoggedIn) {
+  router.push('/login')
+}
 </script>
 
 <template>

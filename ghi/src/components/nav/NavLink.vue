@@ -4,6 +4,6 @@ defineProps(['name', 'path'])
 
 <template>
   <div className="nav-link m-4">
-    <span>{{ name }}</span>
+    <RouterLink v-bind:to="path">{{ name }}</RouterLink>
   </div>
 </template>

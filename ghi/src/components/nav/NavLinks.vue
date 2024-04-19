@@ -4,8 +4,8 @@ import NavLink from './NavLink.vue';
 
 <template>
   <div className="nav-links self-center flex flex-row">
-    <NavLink name="Collections" path="/collections"/>
-    <NavLink name="Items" path="/items"/>
-    <NavLink name="Users" path="/users"/>
+    <NavLink name="Main" path="/"/>
+    <NavLink name="Login" path="login"/>
+    <NavLink name="Logout" path="logout"/>
   </div>
 </template>

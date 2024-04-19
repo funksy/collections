@@ -73,7 +73,6 @@ class UserRepository:
         user = self.authenticate_user(form_data.username, form_data.password)
         if not user:
             raise HTTPException(status_code=401, detail="invalid credentials")
-
         token = jwt.encode(user.dict(), JWT_SECRET)
         user_token = {"access_token": token, "token_type": "bearer"}
         return UserToken(**user_token)
