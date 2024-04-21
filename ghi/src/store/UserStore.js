@@ -3,7 +3,7 @@ import { mande } from 'mande'
 
 const API_HOST = import.meta.env.VITE_API_HOST
 const tokenApi = mande(API_HOST + '/token')
-const userApi = mande(API_HOST + '/users')
+const usersApi = mande(API_HOST + '/users')
 
 export const useUser = defineStore('users', {
     state: () => ({
@@ -14,7 +14,7 @@ export const useUser = defineStore('users', {
 
     actions: {
         async createUser(username, password) {
-            this.userData = await userApi.post({username, password})
+            this.userData = await usersApi.post({username, password})
         },
         async loginUser(username, password) {
             const body = JSON.stringify(
@@ -25,9 +25,12 @@ export const useUser = defineStore('users', {
                     headers: {"Content-Type": "application/x-www-form-urlencoded"}
                 })
             } catch (error) {
-                console.log(await error.body)
+                throw error
             }
-            // this.userData = await userApi.get(username)
+            if (this.token) {
+                this.userData = await usersApi.get(username)
+                this.isLoggedIn = true
+            }
 
         },
         logoutUser() {

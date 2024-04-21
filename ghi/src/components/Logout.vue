@@ -6,3 +6,7 @@ const userStore = useUser()
 
 userStore.logoutUser()
 </script>
+
+<template>
+
+</template>
