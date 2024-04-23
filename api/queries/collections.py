@@ -35,6 +35,8 @@ class CollectionRepository:
             "name": collection.name,
             "fields": [field.dict() for field in collection.fields],
         }
+        if db.collections.find_one({"name": collection.name}):
+            raise HTTPException(status_code=404, detail="collection name in use")
         db.collections.insert_one(new_collection)
         new_collection["id"] = str(new_collection["_id"])
         return CollectionOut(**new_collection)

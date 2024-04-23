@@ -10,12 +10,6 @@ const errorMessage = ref('')
 function loginUser(e) {
   e.preventDefault()
   userStore.loginUser(username.value, password.value)
-    .catch((error)=> {
-      errorMessage.value = error
-    })
-  if (userStore.token) {
-    errorMessage.value = ''
-  }
 }
 </script>
 

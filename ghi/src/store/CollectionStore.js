@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
-import { mande } from 'mande'
 
 const API_HOST = import.meta.env.VITE_API_HOST
-const collectionsApi = mande(API_HOST + '/collections')
+const collectionsUrl = API_HOST + '/collections'
 
 
 export const useCollection = defineStore('collections', {
@@ -12,8 +11,18 @@ export const useCollection = defineStore('collections', {
 
     actions: {
         async getCollections(token) {
-            collectionsApi.options.headers.Authorization = 'Bearer ' + token
-            this.collections = await collectionsApi.get()
+            const fetchConfig = {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                }
+            }
+            const response = await fetch(collectionsUrl, fetchConfig)
+            if (response.ok) {
+                const data = await response.json()
+                this.collections = data.collections
+            }
         }
     }
 })
