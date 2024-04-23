@@ -33,8 +33,13 @@ class ItemIn(BaseModel):
     fields: List[Field]
 
 
+class ItemUpdate(BaseModel):
+    fields: List[Field]
+
+
 class ItemOut(ItemIn):
     id: str
+    owner: str
     collection_id: str
 
 
@@ -60,18 +65,21 @@ class ItemsRepository:
         item_field_names = [field.name for field in item.fields]
         for field in item_field_names:
             if field not in collection_field_names:
-                raise DataStructureException()
+                raise HTTPException(status_code=403, detail="invalid data structure")
         for field in collection_required_fields:
             if field not in item_field_names:
-                raise RequiredFieldException()
+                raise HTTPException(status_code=403, detail="required field violation")
 
-    def create_item(self, collection_id: str, item: ItemIn) -> ItemOut:
+    def create_item(self, owner: str, collection_id: str, item: ItemIn) -> ItemOut:
         self.check_fields(item=item, collection_id=collection_id)
         new_item = {
             "name": item.name,
+            "owner": owner,
             "fields": [field.dict() for field in item.fields],
             "collection_id": collection_id,
         }
+        if db.items.find_one({"name": item.name, "owner": owner}):
+            raise HTTPException(status_code=403, detail="item name in use")
         db.items.insert_one(new_item)
         new_item["id"] = str(new_item["_id"])
         return ItemOut(**new_item)
@@ -84,27 +92,37 @@ class ItemsRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
 
-    def delete_item(self, item_id: str):
+    def delete_item(self, current_user: str, item_id: str):
         try:
-            result = db.items.delete_one({"_id": ObjectId(item_id)})
-            if result.deleted_count > 0:
-                return {"message": "Successfully deleted"}
+            item = db.items.find_one({"_id": ObjectId(item_id)})
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
+        if item["owner"] != current_user:
+            raise HTTPException(status_code=401, detail="not authorized to delete specified item")
+        result = db.items.delete_one({"_id": ObjectId(item_id)})
+        if result.deleted_count > 0:
+            return {"message": "Successfully deleted"}
+        
 
-    def update_item(self, item_id: str, item: ItemIn, collection_id: str):
-        self.check_fields(item=item, collection_id=collection_id)
+    def update_item(self, current_user: str, item_id: str, item_update: ItemUpdate):
         try:
-            updated_item = {
-                "name": item.name,
-                "fields": [field.dict() for field in item.fields],
-            }
-            result = db.items.update_one(
-                {"_id": ObjectId(item_id)}, {"$set": updated_item}
-            )
-            return self.get_item(item_id)
+            item = db.items.find_one({"_id": ObjectId(item_id)})
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
+        if item["owner"] != current_user:
+            raise HTTPException(status_code=401, detail="not authorized to update specified item")
+        item_update = {
+            "name": item["name"],
+            "owner": item["owner"],
+            "collection_id": item["collection_id"],
+            "fields": [field.dict() for field in item_update.fields],
+        }
+        self.check_fields(item=ItemIn(**item_update), collection_id=item["collection_id"])
+        result = db.items.update_one(
+            {"_id": ObjectId(item_id)}, {"$set": item_update}
+        )
+        return self.get_item(item_id)
+        
 
     def get_list_of_items(self, collection_id) -> ItemListOut:
         items = []

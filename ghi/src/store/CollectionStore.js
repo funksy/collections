@@ -10,7 +10,7 @@ export const useCollection = defineStore('collections', {
     }),
 
     actions: {
-        async getCollections(token) {
+        async getMyCollections(token, username) {
             const fetchConfig = {
                 method: 'get',
                 headers: {
@@ -18,7 +18,7 @@ export const useCollection = defineStore('collections', {
                     'Authorization': 'Bearer ' + token,
                 }
             }
-            const response = await fetch(collectionsUrl, fetchConfig)
+            const response = await fetch(`${collectionsUrl}/me`, fetchConfig)
             if (response.ok) {
                 const data = await response.json()
                 this.collections = data.collections

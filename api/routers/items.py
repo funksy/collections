@@ -3,12 +3,14 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from queries.items import (
     ItemsRepository,
     ItemIn,
+    ItemUpdate,
     ItemOut,
     ItemListOut,
     DataStructureException,
     InvalidCollectionIdException,
     RequiredFieldException,
 )
+from queries.users import UserRepository
 
 
 router = APIRouter()
@@ -16,26 +18,22 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post(
-    "/collections/{collection_id}/items", response_model=ItemOut, tags=["items"]
+    "/collections/{username}/{collection_id}/items", response_model=ItemOut, tags=["items"]
 )
 def create_item(
     collection_id: str,
     data: ItemIn,
+    user_repo: UserRepository = Depends(),
     repo: ItemsRepository = Depends(),
     token: str = Depends(oauth2_scheme),
 ):
-    try:
-        return repo.create_item(collection_id, data)
-    except InvalidCollectionIdException:
-        raise HTTPException(status_code=404, detail="invalid collection_id")
-    except DataStructureException:
-        raise HTTPException(status_code=404, detail="invalid data structure")
-    except RequiredFieldException:
-        raise HTTPException(status_code=404, detail="required field violation")
+    owner = user_repo.get_current_user(token).username
+    return repo.create_item(owner, collection_id, data)
+
 
 
 @router.get(
-    "/collections/{collection_id}/items/{item_id}",
+    "/collections/{username}/{collection_id}/items/{item_id}",
     response_model=ItemOut,
     tags=["items"],
 )
@@ -47,28 +45,31 @@ def get_item(
     return repo.get_item(item_id)
 
 
-@router.delete("/collections/{collection_id}/items/{item_id}", tags=["items"])
+@router.delete("/collections/{username}/{collection_id}/items/{item_id}", tags=["items"])
 def delete_item(
     item_id: str,
+    user_repo: UserRepository = Depends(),
     repo: ItemsRepository = Depends(),
     token: str = Depends(oauth2_scheme),
 ):
-    return repo.delete_item(item_id)
+    current_user = user_repo.get_current_user(token).username
+    return repo.delete_item(current_user, item_id)
 
 
-@router.put("/collections/{collection_id}/items/{item_id}", tags=["items"])
+@router.put("/collections/{username}/{collection_id}/items/{item_id}", tags=["items"])
 def update_item(
     item_id: str,
-    item: ItemIn,
-    collection_id: str,
+    item_update: ItemUpdate,
+    user_repo: UserRepository = Depends(),
     repo: ItemsRepository = Depends(),
     token: str = Depends(oauth2_scheme),
 ):
-    return repo.update_item(item_id, item)
+    current_user = user_repo.get_current_user(token).username
+    return repo.update_item(current_user, item_id, item_update)
 
 
 @router.get(
-    "/collections/{collection_id}/items", response_model=ItemListOut, tags=["items"]
+    "/collections/{username}/{collection_id}/items", response_model=ItemListOut, tags=["items"]
 )
 def get_list_of_items(
     collection_id: str,

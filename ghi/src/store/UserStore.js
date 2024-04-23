@@ -36,8 +36,8 @@ export const useUser = defineStore('users', {
             const response = await fetch(tokenUrl, fetchConfig)
             if (response.ok) {
                 this.token = await response.json()
-                this.isLoggedIn = true
                 await this.getUserData(username)
+                this.isLoggedIn = true
             }
         },
         async getUserData(username) {
@@ -50,11 +50,5 @@ export const useUser = defineStore('users', {
                 this.userData = await response.json()
             }
         },        
-        logoutUser() {
-            this.token = null
-            this.isLoggedIn = false
-            this.userData = null
-        },
-        
     }
 })

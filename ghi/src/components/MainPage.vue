@@ -1,6 +1,6 @@
 <script setup>
 import router from '../router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useUser } from '../store/UserStore';
 import { useCollection } from '../store/CollectionStore';
 import { storeToRefs } from 'pinia';
@@ -10,7 +10,7 @@ const collectionStore = useCollection()
 const { collections } = storeToRefs(collectionStore)
 
 onMounted(() => {
-  collectionStore.getCollections(userStore.token.access_token)
+  collectionStore.getMyCollections(userStore.token.access_token)
 })
 
 if (!userStore.isLoggedIn) {
