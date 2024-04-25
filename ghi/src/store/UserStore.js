@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { useFetch } from '@vueuse/core'
+import router from '../router';
 
 const API_HOST = import.meta.env.VITE_API_HOST
 const tokenUrl = API_HOST + '/token'
@@ -38,7 +40,12 @@ export const useUser = defineStore('users', {
                 this.token = await response.json()
                 await this.getUserData(username)
                 this.isLoggedIn = true
+                router.push('/')
+            } else {
+                const error = await response.json()
+                return new Error(error.detail)
             }
+
         },
         async getUserData(username) {
             const fetchConfig = {

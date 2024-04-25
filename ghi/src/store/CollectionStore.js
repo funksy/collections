@@ -10,7 +10,7 @@ export const useCollection = defineStore('collections', {
     }),
 
     actions: {
-        async getMyCollections(token, username) {
+        async getMyCollections(token) {
             const fetchConfig = {
                 method: 'get',
                 headers: {

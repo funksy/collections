@@ -1,11 +1,24 @@
 <script setup>
+import { storeToRefs } from 'pinia';
 import NavLink from './NavLink.vue';
+import { useUser } from '../../store/UserStore';
+
+const userStore = useUser()
+const { isLoggedIn } = storeToRefs(userStore)
 </script>
 
 <template>
-  <div className="nav-links self-center flex flex-row">
-    <NavLink name="Main" path="/"/>
-    <NavLink name="Login" path="login"/>
-    <NavLink name="Logout" path="logout"/>
+  <div class="nav-links">
+    <NavLink v-if="!isLoggedIn" name="Login" path="/login"/>
+    <NavLink v-if="isLoggedIn" name="Main" path="/"/>
+    <NavLink v-if="isLoggedIn" name="Logout" path="/logout"/>
   </div>
 </template>
+
+<style>
+.nav-links {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+</style>

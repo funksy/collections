@@ -4,8 +4,21 @@ import NavLinks from './NavLinks.vue';
 </script>
 
 <template>
-  <nav className="nav-bar self-center flex flex-row flex-0 justify-between w-full h-40 max-w-6xl border-4 border-sky-600">
+  <nav class="nav-bar">
     <Title/>
     <NavLinks />
   </nav>
 </template>
+
+<style>
+.nav-bar {
+  place-self: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 10rem;
+  max-width: 72rem;
+  border: 4px solid skyblue;
+}
+</style>

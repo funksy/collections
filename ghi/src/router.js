@@ -1,13 +1,17 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createWebHistory, createRouter } from "vue-router"
 
-import MainPage from "./components/MainPage.vue";
-import LoginPage from "./components/LoginPage.vue";
-import Logout from "./components/Logout.vue"
+import LoginPage from "./components/LoginPage.vue"
+import LogoutPage from "./components/LogoutPage.vue"
+import CollectionsPage from "./components/collections/CollectionsPage.vue"
+import NewCollectionPage from "./components/collections/NewCollectionPage.vue"
+import CollectionDetailPage from "./components/collections/CollectionDetailPage.vue"
 
 const routes = [
-    {path: '/', component: MainPage},
+    {path: '/', component: CollectionsPage},
     {path: '/login', component: LoginPage},
-    {path: '/logout', component: Logout},
+    {path: '/logout', component: LogoutPage},
+    {path: '/collections/new', component: NewCollectionPage},
+    {path: '/collections/:collection_id', component: CollectionDetailPage}
 ]
 
 const router = createRouter({

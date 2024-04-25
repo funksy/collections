@@ -1,41 +1,98 @@
 <script setup>
 import { ref } from 'vue';
-import router from '../router';
 import { useUser } from '../store/UserStore'
 
 const userStore = useUser()
-const username = ref('')
-const password = ref('')
-const errorMessage = ref('')
+const username = ref(null)
+const password = ref(null)
+const errorMessage = ref(null)
 
-function loginUser(e) {
+async function loginUser(e) {
   e.preventDefault()
-  userStore.loginUser(username.value, password.value)
+  const response = await userStore.loginUser(username.value, password.value)
+  if (response instanceof Error) {
+    errorMessage.value = response.message
+  }
 }
 </script>
 
 <template>
-  <div className="login-page self-center flex flex-col w-full h-full max-w-6xl border-4 border-red-500">
-    <div className="login-form self-center flex flex-col w-96 border-4 border-blue-800">
-      <h1 className="text-center">Login</h1>
-      <p v-if="errorMessage" className="text-red-500 font-bold">{{ errorMessage }}</p>
-      <form>
-        <div>
-          <input
-            v-model="username"
-            placeholder="Username"
-          />
-        </div>
-        <div>
-          <input
-            v-model="password"
-            type="password"
-            required
-            placeholder="Password"
-          />
-        </div>
-        <button @click="loginUser">Login</button>
+  <div class="login-page">
+    <div class="login-form-wrapper">
+      <h1 class="login-form-header">Login</h1>
+      <form class="login-form">
+        <input
+          class="login-form-field"
+          v-model="username"
+          required
+          placeholder="Username"
+        />
+        <input
+          class="login-form-field"
+          v-model="password"
+          type="password"
+          required
+          placeholder="Password"
+        />
+        <button class="login-form-button" @click="loginUser">Login</button>
       </form>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
+
+<style>
+.login-page {
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 72rem;
+  border: 4px solid red;
+}
+
+.login-form-wrapper {
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  width: 24rem;
+  border: 4px solid blue;
+  margin: 5px;
+}
+
+.login-form-header {
+  text-align: center;
+  font-weight: bold;
+}
+
+.error-message {
+  place-self: center;
+  color: red;
+  font-weight: bold;
+  margin: 8px;
+  text-transform: capitalize;
+}
+
+.login-form {
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form-field {
+  place-self: center;
+  margin: 8px;
+  padding: 4px;
+  border: 1px solid black;
+}
+
+.login-form-button {
+  place-self: center;
+  margin: 8px;
+  padding: 4px;
+  border: 1px solid black;
+  width: 8rem;
+  background: lightgray;
+}
+</style>

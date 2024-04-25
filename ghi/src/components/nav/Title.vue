@@ -3,7 +3,14 @@
 </script>
 
 <template>
-  <div className="title self-center m-4">
+  <div class="nav-title">
     <h1>Collections</h1>
   </div>
 </template>
+
+<style>
+.nav-title {
+  align-self: center;
+  margin: 16px;
+}
+</style>

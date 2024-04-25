@@ -22,6 +22,7 @@ class CollectionIn(BaseModel):
 
 
 class CollectionUpdate(BaseModel):
+    name: str
     fields: List[Field]
 
 
@@ -77,7 +78,7 @@ class CollectionRepository:
         if collection["owner"] != current_user:
             raise HTTPException(status_code=401, detail="not authorized to update specified collection")
         collection_update = {
-            "name": collection["name"],
+            "name": collection_update.name,
             "owner": collection["owner"],
             "fields": [field.dict() for field in collection_update.fields]
         }
