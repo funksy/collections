@@ -26,9 +26,11 @@ onMounted(async () => {
 
 <template>
   <div class="collections-page">
-    <div v-if="collections" v-for="collection in collections">
-      <Collection :collection="collection"/>
-    </div>
+    <template v-if="collections">
+      <div v-for="collection in collections">
+        <Collection :collection="collection"/>
+      </div>
+    </template>
   </div>
   <button @click="router.push('/collections/new')">Add New Collection</button>
 </template>

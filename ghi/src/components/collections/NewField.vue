@@ -4,45 +4,70 @@ import DataTypeDropdown from './DataTypeDropdown.vue'
 
 const props = defineProps(['numField'])
 const numField = ref(props.numField)
-const name = ref(null)
-const dataTypes = ref(['int', 'string', 'bool'])
-const dataType = ref('')
-const required = ref(false)
+const fieldValues = ref({
+  name: null,
+  dataType: null,
+  required: false
+})
+const dataTypes = ref([{
+  name: 'Number',
+  value: 'int'
+  },
+  {
+  name: 'String',
+  value: 'str'
+  },
+  {
+  name: 'True/False',
+  value: 'bool'
+  },
+])
 </script>
 
-<template>
+<template class="collection-fields-wrapper">
+  <h2 class="collection-fields-number">Field number: {{ numField }}</h2>
   <form class="collection-fields-form">
     <input
+      id="field-name"
       class="field-name"
-      v-model="name"
-      placeholder="Field Name"
+      v-model="fieldValues.name"
+      placeholder="Field name"
     />
-    <DataTypeDropdown :options="dataTypes"/>
-    <div class="required-checkbox">
-      <input class="required-checkbox-button" type="checkbox" v-model="required">
-      <label class="required-checkbox-label" for="required-checkbox">Required?</label>
+    <DataTypeDropdown
+      id="data-type"
+      :options="dataTypes"
+      v-model="fieldValues.dataType"
+    />
+    <div class="required-checkbox-wrapper">
+      <input id="required-checkbox" class="required-checkbox-button" type="checkbox" v-model="fieldValues.required">
+      <label class="required-checkbox-label" for="required-checkbox">Field required?</label>
     </div>
   </form>
 </template>
 
 <style>
+.collection-fields-number {
+  margin: 8px;
+  font-weight: bold;
+}
 .collection-fields-form {
   display: flex;
   flex-direction: column;
+  margin-bottom: 32px;
 }
 
 .field-name {
   margin: 8px;
-  padding: 4px;
+  padding: 8px;
   border: 1px solid black;
 }
 
-.required-checkbox {
+.required-checkbox-wrapper {
   display: inline;
 }
 
 .required-checkbox-button {
-  margin-left: 8px;
+  margin: 8px;
 }
 
 .required-checkbox-label {

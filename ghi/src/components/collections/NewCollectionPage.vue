@@ -26,12 +26,22 @@ function removeField() {
           placeholder="Collection Name"
         />
         <h1 class="new-collection-fields-header">Collection Fields</h1>
-        <ul v-for="field in numFields">
-          <NewField :numField="field" />
-        </ul>
+          <ul v-for="field in numFields">
+            <NewField :numField="field" />
+          </ul>
       </form>
-      <button @click="addField">Add Field</button>
-      <button @click="removeField">Remove Field</button>
+      <button
+        class="field-button"
+        @click="addField"
+      >
+        Add Field
+      </button>
+      <button
+        class="field-button"
+        @click="removeField"
+      >
+        Remove Field
+      </button>
     </div>
   </div>
 </template>
@@ -53,6 +63,7 @@ function removeField() {
   width: 24rem;
   border: 4px solid blue;
   margin: 8px;
+  padding: 8px;
 }
 
 .new-collection-header {
@@ -70,7 +81,7 @@ function removeField() {
 
 .new-collection-name {
   margin: 8px;
-  padding: 4px;
+  padding: 8px;
   border: 1px solid black;
 }
 
@@ -79,5 +90,14 @@ function removeField() {
   text-align: center;
   font-weight: bold;
   font-size: larger;
+}
+
+.field-button {
+  place-self: center;
+  width: 8rem;
+  margin: 4px;
+  padding: 4px;
+  border: 1px solid black;
+  background-color: lightgray;
 }
 </style>
