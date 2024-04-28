@@ -4,31 +4,22 @@ import {
   computed,
   defineProps,
   defineEmits,
+  defineModel,
   onMounted,
   onBeforeUnmount 
 } from 'vue';
 
-const props = defineProps({
-  options: {
-    type: Array,
-    required: true
-  },
-  modelValue: {
-    default: null
-  }
-})
-const emit = defineEmits(['update: modelValue'])
+const dataType = defineModel()
+const props = defineProps(['options'])
 const selectedOption = ref(null)
-const mappedSelectedOption = computed(() => {
-  return (selectedOption.value?.name || selectedOption.value) || 'Field data type'
-})
 const isDropdownVisible = ref(false)
 const dropdown = ref(null)
 
 const toggleOptionSelect = (option) => {
+  dataType.value = option
   selectedOption.value = option
-  emit('update: modelValue', option)
-  closeDropdown()
+  // emit('update: modelValue', option)
+  isDropdownVisible.value = false
 }
 
 const closeDropdown = (element) => {
@@ -47,15 +38,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="dropdown-wrapper">
+    <div class="dropdown-wrapper" ref="dropdown">
       <div
         class="dropdown-selected-option"
         @focus="isDropdownVisible = true"
-        ref="dropdown"
         tabindex="0"
       >
-        <span v-bind:style="!selectedOption ? {opacity: 0.5} : {opacity: 1}">
-          {{ mappedSelectedOption }}
+        <span v-if="selectedOption">
+          {{ selectedOption }}
+        </span>
+        <span v-else v-bind:style="{opacity: 0.5}">
+          Field data type
         </span>
       </div>
       <div
@@ -84,6 +77,7 @@ onBeforeUnmount(() => {
   margin: 8px;
   padding: 8px;
   border: solid 1px black;
+  border-radius: 4px;
 }
 
 .options-wrapper {

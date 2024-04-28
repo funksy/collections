@@ -9,10 +9,15 @@ const errorMessage = ref(null)
 
 async function loginUser(e) {
   e.preventDefault()
-  const response = await userStore.loginUser(username.value, password.value)
-  if (response instanceof Error) {
-    errorMessage.value = response.message
+  if (username.value && password.value) {
+    const response = await userStore.loginUser(username.value, password.value)
+    if (response instanceof Error) {
+      errorMessage.value = response.message
+    }
+  } else {
+    errorMessage.value = "please provide a username and password"
   }
+  
 }
 </script>
 
@@ -34,7 +39,12 @@ async function loginUser(e) {
           required
           placeholder="Password"
         />
-        <button class="login-form-button" @click="loginUser">Login</button>
+        <button
+          class="login-form-button"
+          type="submit"
+          @click="loginUser">
+            Login
+          </button>
       </form>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
@@ -71,7 +81,7 @@ async function loginUser(e) {
   color: red;
   font-weight: bold;
   margin: 8px;
-  text-transform: capitalize;
+  text-transform: lowercase;
 }
 
 .login-form {
@@ -85,6 +95,7 @@ async function loginUser(e) {
   margin: 8px;
   padding: 4px;
   border: 1px solid black;
+  border-radius: 4px;
 }
 
 .login-form-button {
@@ -92,6 +103,7 @@ async function loginUser(e) {
   margin: 8px;
   padding: 4px;
   border: 1px solid black;
+  border-radius: 4px;
   width: 8rem;
   background: lightgray;
 }
