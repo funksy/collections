@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, defineModel } from 'vue'
+import { ref, defineProps, defineModel } from 'vue'
 import DataTypeDropdown from './DataTypeDropdown.vue'
 
 const fieldValues = defineModel()

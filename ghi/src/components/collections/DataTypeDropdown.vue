@@ -1,9 +1,7 @@
 <script setup>
 import {
   ref,
-  computed,
   defineProps,
-  defineEmits,
   defineModel,
   onMounted,
   onBeforeUnmount 

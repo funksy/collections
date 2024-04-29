@@ -8,9 +8,15 @@ const usersUrl = API_HOST + '/users'
 
 export const useUser = defineStore('users', {
     state: () => ({
-        userData: null,
-        token: null,
-        isLoggedIn: false
+        userData: {
+            id: "66226cb581fcb111844470a5",
+            username: 'john'
+        },
+        token: {
+            access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MjI2Y2I1ODFmY2IxMTE4NDQ0NzBhNSIsInVzZXJuYW1lIjoiam9obiJ9.qqQ3bZQTflFQAsMKHCfEiwSJShCwbZwzHkyOvIEbuiQ",
+            token_type: 'bearer'
+        },
+        isLoggedIn: true
     }),
 
     actions: {

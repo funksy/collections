@@ -63,7 +63,7 @@ class CollectionRepository:
             raise HTTPException(status_code=404, detail="invalid collection_id")
         if collection["owner"] != current_user:
             raise HTTPException(status_code=401, detail="not authorized to delete specified collection")
-            result = db.collections.delete_one({"_id": ObjectId(collection_id)})
+        result = db.collections.delete_one({"_id": ObjectId(collection_id)})
         if result.deleted_count > 0:
             return {"message": "collection deleted"}
         

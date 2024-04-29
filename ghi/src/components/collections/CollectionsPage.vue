@@ -4,8 +4,10 @@ import { ref, onMounted } from 'vue';
 import { useUser } from '../../store/UserStore';
 import Collection from './Collection.vue';
 
-const userStore = useUser()
 const collections = ref(null)
+const userStore = useUser()
+const deletedCollection = ref('test')
+
 
 onMounted(async () => {
   const collectionsUrl = import.meta.env.VITE_API_HOST + '/collections'
@@ -25,24 +27,51 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="collections-page">
-    <template v-if="collections">
-      <div v-for="collection in collections">
-        <Collection :collection="collection"/>
-      </div>
-    </template>
+  <div class="collections-page-wrapper">
+    <div class="collections">
+      <template v-if="collections">
+        <div v-for="collection in collections">
+          <Collection
+            :collection="collection"
+          />
+        </div>
+      </template>
+    </div>
+    <button
+      class="new-collection-button"
+      @click="router.push('/collections/new')"
+    >
+      Create Collection
+    </button>
   </div>
-  <button @click="router.push('/collections/new')">Add New Collection</button>
 </template>
 
 <style>
-.collections-page {
+.collections-page-wrapper {
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 72rem;
+  border: 4px solid red;
+}
+
+.collections {
   place-self: center;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
-  max-width: 72rem;
-  border: 4px solid red;
+}
+
+.new-collection-button {
+  place-self: center;
+  width: 10rem;
+  margin: 16px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-weight: bold;
 }
 </style>
