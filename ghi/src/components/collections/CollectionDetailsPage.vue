@@ -27,7 +27,7 @@ onMounted(async () => {
 })
 
 const deleteCollection = async () => {
-  const collectionsUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
+  const collectionUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
   const fetchConfig = {
     method: 'delete',
     headers: {
@@ -35,7 +35,7 @@ const deleteCollection = async () => {
       'Authorization': 'Bearer ' + userStore.token.access_token,
     }
   }
-  const response = await fetch(collectionsUrl, fetchConfig)
+  const response = await fetch(collectionUrl, fetchConfig)
   if (response.ok) {
     router.push('/')
   } else {
@@ -63,12 +63,20 @@ const deleteCollection = async () => {
           </ul>
         </div>
       </div>
-      <button
-        class="collection-delete-button"
-        @click="deleteCollection"
-      >
-        Delete Collection
-      </button>
+      <div class="collections-details-actions">
+        <button
+          class="collection-details-update-button"
+          @click="router.push(`/collections/${collection_id}/update`)"
+        >
+          Update Collection
+        </button>
+        <button
+          class="collection-details-delete-button"
+          @click="deleteCollection"
+        >
+          Delete Collection
+        </button>
+      </div>
       <p
         class="error-message"
         v-if="errorMessage"
@@ -125,12 +133,29 @@ const deleteCollection = async () => {
   margin: 8px;
 }
 
-.collection-delete-button {
+.collections-details-actions {
+  display: flex;
+  flex-direction: row;
+  place-self: center;
+}
+
+.collection-details-update-button {
   place-self: center;
   width: 10rem;
   margin: 16px;
   padding: 8px;
-  border: 1px solid black;
+  border: 1px solid green;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-weight: bold;
+}
+
+.collection-details-delete-button {
+  place-self: center;
+  width: 10rem;
+  margin: 16px;
+  padding: 8px;
+  border: 1px solid red;
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;

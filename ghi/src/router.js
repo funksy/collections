@@ -13,7 +13,7 @@ const routes = [
     {path: '/logout', component: LogoutPage},
     {path: '/collections/new', component: NewCollectionPage},
     {path: '/collections/:collection_id', component: CollectionDetailsPage},
-    {oath: '/collections/:collection_id', component: CollectionUpdatePage}
+    {path: '/collections/:collection_id/update', component: CollectionUpdatePage}
 ]
 
 const router = createRouter({

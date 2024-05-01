@@ -15,6 +15,7 @@ import NavLinks from './NavLinks.vue';
   place-self: center;
   display: flex;
   flex-direction: row;
+  flex: none;
   justify-content: space-between;
   width: 100%;
   height: 10rem;

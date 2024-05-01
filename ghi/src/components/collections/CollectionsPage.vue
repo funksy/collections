@@ -6,7 +6,6 @@ import Collection from './Collection.vue';
 
 const collections = ref(null)
 const userStore = useUser()
-const deletedCollection = ref('test')
 
 
 onMounted(async () => {
@@ -69,7 +68,7 @@ onMounted(async () => {
   width: 10rem;
   margin: 16px;
   padding: 8px;
-  border: 1px solid black;
+  border: 2px solid green;
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;

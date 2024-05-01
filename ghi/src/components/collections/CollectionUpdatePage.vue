@@ -1,9 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useUser } from '../../store/UserStore';
 import NewField from './NewField.vue'
+import router from '../../router';
 
 const userStore = useUser()
+const route = useRoute()
+const collection_id = route.params.collection_id
 const collectionData = ref({
   name: null,
   fields: [
@@ -14,6 +18,7 @@ const collectionData = ref({
     }
   ]
 })
+const minumumCollectionField = ref(null)
 const errorMessage = ref(null)
 
 const formValidation = () => {
@@ -30,24 +35,28 @@ const formValidation = () => {
   return formName && formFields
 }
 
-const addField = () => {
+const newField = () => {
   collectionData.value.fields.push({
     name: null,
     data_type: null,
     required: false
   })
 }
-const removeField = () => {
-  collectionData.value.fields.pop()
+const removeField = (index) => {
+  collectionData.value.fields.splice(index, 1)
+  if (collectionData.value.fields.length < 1) {
+    newField()
+    minumumCollectionField.value = 'You must have at least 1 field defined'
+  }
 }
 
-const createCollection = async (e) => {
+const updateCollection = async (e) => {
   e.preventDefault()
-  if (formValidation.value) {
-    const collectionsUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}`
+  if (formValidation()) {
+    const collectionsUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
     const body = JSON.stringify(collectionData.value)
     const fetchConfig = {
-      method: 'post',
+      method: 'put',
       body: body,
       headers: {
         'Content-Type': 'application/json',
@@ -56,53 +65,100 @@ const createCollection = async (e) => {
     }
     const response = await fetch(collectionsUrl, fetchConfig)
     if (response.ok) {
-      const data = await response.json()
+      // const data = await response.json()
+      router.push(`/collections/${collection_id}`)
     }
   } else {
-    errorMessage.value = "Please ensure all fields are filled out"
+    errorMessage.value = "Please ensure all fields are completed"
   }
 }
+
+const getCollection = async () => {
+  const collectionUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
+  const fetchConfig = {
+    method: 'get',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + userStore.token.access_token,
+    }
+  }
+  const response = await fetch(`${collectionUrl}`, fetchConfig)
+  if (response.ok) {
+      const data = await response.json()
+      collectionData.value = {
+        name: data.name,
+        fields: data.fields
+      }
+  }
+}
+
+onMounted(async () => {
+  const collectionUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
+  const fetchConfig = {
+    method: 'get',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + userStore.token.access_token,
+    }
+  }
+  const response = await fetch(`${collectionUrl}`, fetchConfig)
+  if (response.ok) {
+      const data = await response.json()
+      collectionData.value = {
+        name: data.name,
+        fields: data.fields
+      }
+  }
+})
 </script>
 
 <template>
-  <div class="new-collection-page">
-    <div class="new-collection-form-wrapper">
-      <h1 class="new-collection-header">New Collection</h1>
-      <form class="new-collection-form">
+  <div class="update-collection-page">
+    <h1 v-if="!collectionData">Loading...</h1>
+    <div class="update-collection-form-wrapper" v-else>
+      <h1 class="update-collection-header">New Collection</h1>
+      <form class="update-collection-form">
         <input
-          class="new-collection-name"
+          class="update-collection-name"
           v-model="collectionData.name"
           placeholder="Collection Name"
           required
         />
-        <h1 class="new-collection-fields-header">Collection Fields</h1>
-        <ul v-for="(field, index) in collectionData.fields">
+        <h1 class="update-collection-fields-header">Collection Fields</h1>
+        <p class="error-message" v-if="minumumCollectionField">{{ minumumCollectionField }}</p>
+        <ul class="update-collection-fields" v-for="(field, index) in collectionData.fields">
           <NewField
             v-model="collectionData.fields[index]"
             :index="index"
           />
+          <button
+            type="button"
+            class="remove-field-button"
+            @click="removeField(index)"
+          >
+            Remove Field
+          </button>
         </ul>
         <button
           type="button"
-          class="field-button"
-          @click="addField"
+          class="add-field-button"
+          @click="newField"
         >
-          Add Field
+          Add New Field
         </button>
         <button
           type="button"
-          class="field-button"
-          @click="removeField"
-          v-if="collectionData.fields.length > 1"
+          class="reset-fields-button"
+          @click="getCollection"
         >
-          Remove Field
+          Reset Fields
         </button>
         <button
           type="submit"
-          class="collection-submit-button"
-          @click="createCollection"
+          class="collection-update-button"
+          @click="updateCollection"
         >
-          Create Collection
+          Update Collection
         </button>
         <p
           v-if="errorMessage"
@@ -116,7 +172,7 @@ const createCollection = async (e) => {
 </template>
 
 <style>
-.new-collection-page {
+.update-collection-page {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -125,7 +181,7 @@ const createCollection = async (e) => {
   border: 4px solid red;
 }
 
-.new-collection-form-wrapper {
+.update-collection-form-wrapper {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -135,34 +191,54 @@ const createCollection = async (e) => {
   padding: 8px;
 }
 
-.new-collection-header {
+.update-collection-header {
   text-align: center;
   font-weight: bold;
   font-size: larger;
   margin: 8px;
 }
 
-.new-collection-form {
+.update-collection-form {
   margin: 8px;
   display: flex;
   flex-direction: column;
 }
 
-.new-collection-name {
+.update-collection-name {
   margin: 8px;
   padding: 8px;
   border: 1px solid black;
   border-radius: 4px;
 }
 
-.new-collection-fields-header {
-  margin: 8px;
+.update-collection-fields-header {
   text-align: center;
   font-weight: bold;
   font-size: larger;
+  margin: 16px;
 }
 
-.field-button {
+.update-collection-fields {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid orange;
+}
+
+.remove-field-button {
+  place-self: center;
+  width: 6rem;
+  margin: 4px;
+  padding: 2px;
+  border: 2px solid red;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-size: smaller;
+}
+
+.add-field-button {
   place-self: center;
   width: 6rem;
   margin: 4px;
@@ -173,12 +249,23 @@ const createCollection = async (e) => {
   font-size: smaller;
 }
 
-.collection-submit-button {
+.reset-fields-button {
   place-self: center;
   width: 10rem;
   margin-top: 16px;
   padding: 8px;
-  border: 1px solid black;
+  border: 2px solid orange;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-weight: bold;
+}
+
+.collection-update-button {
+  place-self: center;
+  width: 10rem;
+  margin-top: 16px;
+  padding: 8px;
+  border: 2px solid green;
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;

@@ -25,7 +25,7 @@ const dataTypes = ref(['Number', 'String', 'True/False'])
     />
     <div class="required-checkbox-wrapper">
       <input id="required-checkbox" class="required-checkbox-button" type="checkbox" v-model="fieldValues.required">
-      <label class="required-checkbox-label" for="required-checkbox">Field required?</label>
+      <label class="required-checkbox-label">Field required?</label>
     </div>
   </form>
 </template>
@@ -38,7 +38,7 @@ const dataTypes = ref(['Number', 'String', 'True/False'])
 .collection-fields-form {
   display: flex;
   flex-direction: column;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 
 .field-name {

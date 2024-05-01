@@ -15,8 +15,7 @@ const dropdown = ref(null)
 
 const toggleOptionSelect = (option) => {
   dataType.value = option
-  selectedOption.value = option
-  // emit('update: modelValue', option)
+  // selectedOption.value = option
   isDropdownVisible.value = false
 }
 
@@ -42,8 +41,8 @@ onBeforeUnmount(() => {
         @focus="isDropdownVisible = true"
         tabindex="0"
       >
-        <span v-if="selectedOption">
-          {{ selectedOption }}
+        <span v-if="dataType">
+          {{ dataType }}
         </span>
         <span v-else v-bind:style="{opacity: 0.5}">
           Field data type

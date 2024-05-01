@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useUser } from '../../store/UserStore';
 import NewField from './NewField.vue'
+import router from '../../router';
 
 const userStore = useUser()
 const collectionData = ref({
@@ -20,11 +21,14 @@ const formValidation = () => {
   let formName = false
   if (collectionData.value.name) {
     formName = true
+  } else {
+    console.log('no form name')
   }
   let formFields = true
   for (const field of collectionData.value.fields) {
     if (!field.name || !field.data_type) {
       formFields = false
+      console.log('something about fields failed')
     }
   }
   return formName && formFields
@@ -43,7 +47,7 @@ const removeField = () => {
 
 const createCollection = async (e) => {
   e.preventDefault()
-  if (formValidation.value) {
+  if (formValidation()) {
     const collectionsUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}`
     const body = JSON.stringify(collectionData.value)
     const fetchConfig = {
@@ -57,9 +61,10 @@ const createCollection = async (e) => {
     const response = await fetch(collectionsUrl, fetchConfig)
     if (response.ok) {
       const data = await response.json()
+      router.push(`/collections/${data.id}`)
     }
   } else {
-    errorMessage.value = "Please ensure all fields are filled out"
+    errorMessage.value = "Please ensure all fields are completed"
   }
 }
 </script>
@@ -76,7 +81,7 @@ const createCollection = async (e) => {
           required
         />
         <h1 class="new-collection-fields-header">Collection Fields</h1>
-        <ul v-for="(field, index) in collectionData.fields">
+        <ul class="new-collection-fields" v-for="(field, index) in collectionData.fields">
           <NewField
             v-model="collectionData.fields[index]"
             :index="index"
@@ -84,14 +89,14 @@ const createCollection = async (e) => {
         </ul>
         <button
           type="button"
-          class="field-button"
+          class="new-collection-add-field-button"
           @click="addField"
         >
           Add Field
         </button>
         <button
           type="button"
-          class="field-button"
+          class="new-collection-remove-field-button"
           @click="removeField"
           v-if="collectionData.fields.length > 1"
         >
@@ -99,7 +104,7 @@ const createCollection = async (e) => {
         </button>
         <button
           type="submit"
-          class="collection-submit-button"
+          class="collection-create-button"
           @click="createCollection"
         >
           Create Collection
@@ -156,13 +161,33 @@ const createCollection = async (e) => {
 }
 
 .new-collection-fields-header {
-  margin: 8px;
   text-align: center;
   font-weight: bold;
   font-size: larger;
+  margin: 16px;
 }
 
-.field-button {
+.new-collection-fields {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid orange;
+}
+
+.new-collection-remove-field-button {
+  place-self: center;
+  width: 6rem;
+  margin: 4px;
+  padding: 2px;
+  border: 1px solid red;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-size: smaller;
+}
+
+.new-collection-add-field-button {
   place-self: center;
   width: 6rem;
   margin: 4px;
@@ -173,12 +198,12 @@ const createCollection = async (e) => {
   font-size: smaller;
 }
 
-.collection-submit-button {
+.collection-create-button {
   place-self: center;
   width: 10rem;
   margin-top: 16px;
   padding: 8px;
-  border: 1px solid black;
+  border: 2px solid green;
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
