@@ -2,12 +2,16 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUser } from '../../store/UserStore';
-import NewField from './NewField.vue'
+import CollectionField from './CollectionField.vue'
 import router from '../../router';
 
 const userStore = useUser()
+const username = userStore.userData.username
+const token = userStore.token.access_token
+const API = import.meta.env.VITE_API_HOST
 const route = useRoute()
 const collection_id = route.params.collection_id
+
 const collectionData = ref({
   name: null,
   fields: [
@@ -53,14 +57,14 @@ const removeField = (index) => {
 const updateCollection = async (e) => {
   e.preventDefault()
   if (formValidation()) {
-    const collectionsUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
+    const collectionsUrl = API + `/${username}/collections/${collection_id}`
     const body = JSON.stringify(collectionData.value)
     const fetchConfig = {
       method: 'put',
       body: body,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + userStore.token.access_token,
+        'Authorization': 'Bearer ' + token,
       }
     }
     const response = await fetch(collectionsUrl, fetchConfig)
@@ -74,12 +78,12 @@ const updateCollection = async (e) => {
 }
 
 const getCollection = async () => {
-  const collectionUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
+  const collectionUrl = API + `/${username}/collections/${collection_id}`
   const fetchConfig = {
     method: 'get',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + userStore.token.access_token,
+        'Authorization': 'Bearer ' + token,
     }
   }
   const response = await fetch(`${collectionUrl}`, fetchConfig)
@@ -93,12 +97,12 @@ const getCollection = async () => {
 }
 
 onMounted(async () => {
-  const collectionUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}/${collection_id}`
+  const collectionUrl = API + `/${username}/collections/${collection_id}`
   const fetchConfig = {
     method: 'get',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + userStore.token.access_token,
+        'Authorization': 'Bearer ' + token,
     }
   }
   const response = await fetch(`${collectionUrl}`, fetchConfig)
@@ -127,7 +131,7 @@ onMounted(async () => {
         <h1 class="update-collection-fields-header">Collection Fields</h1>
         <p class="error-message" v-if="minumumCollectionField">{{ minumumCollectionField }}</p>
         <ul class="update-collection-fields" v-for="(field, index) in collectionData.fields">
-          <NewField
+          <CollectionField
             v-model="collectionData.fields[index]"
             :index="index"
           />

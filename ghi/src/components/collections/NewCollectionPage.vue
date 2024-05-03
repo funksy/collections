@@ -1,10 +1,14 @@
 <script setup>
 import { ref } from 'vue';
 import { useUser } from '../../store/UserStore';
-import NewField from './NewField.vue'
+import CollectionField from './CollectionField.vue'
 import router from '../../router';
 
 const userStore = useUser()
+const username = userStore.userData.username
+const token = userStore.token.access_token
+const API = import.meta.env.VITE_API_HOST
+
 const collectionData = ref({
   name: null,
   fields: [
@@ -48,14 +52,14 @@ const removeField = () => {
 const createCollection = async (e) => {
   e.preventDefault()
   if (formValidation()) {
-    const collectionsUrl = import.meta.env.VITE_API_HOST + `/collections/${userStore.userData.username}`
+    const collectionsUrl = API + `/${username}/collections`
     const body = JSON.stringify(collectionData.value)
     const fetchConfig = {
       method: 'post',
       body: body,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + userStore.token.access_token,
+        'Authorization': 'Bearer ' + token,
       }
     }
     const response = await fetch(collectionsUrl, fetchConfig)
@@ -81,8 +85,8 @@ const createCollection = async (e) => {
           required
         />
         <h1 class="new-collection-fields-header">Collection Fields</h1>
-        <ul class="new-collection-fields" v-for="(field, index) in collectionData.fields">
-          <NewField
+        <ul class="new-collection-fields" v-for="(_, index) in collectionData.fields">
+          <CollectionField
             v-model="collectionData.fields[index]"
             :index="index"
           />

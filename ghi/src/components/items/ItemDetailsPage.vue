@@ -10,13 +10,14 @@ const token = userStore.token.access_token
 const API = import.meta.env.VITE_API_HOST
 const route = useRoute()
 const collection_id = route.params.collection_id
+const item_id = route.params.item_id
 
-const collection = ref(null)
+const item = ref(null)
 const errorMessage = ref(null)
 
 
 onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
+  const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
   const fetchConfig = {
     method: 'get',
     headers: {
@@ -24,15 +25,15 @@ onMounted(async () => {
       'Authorization': 'Bearer ' + token,
     }
   }
-  const response = await fetch(collectionUrl, fetchConfig)
+  const response = await fetch(itemUrl, fetchConfig)
   if (response.ok) {
     const data = await response.json()
-    collection.value = data
+    item.value = data
   }
 })
 
-const deleteCollection = async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
+const deleteItem = async () => {
+  const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
   const fetchConfig = {
     method: 'delete',
     headers: {
@@ -40,9 +41,9 @@ const deleteCollection = async () => {
       'Authorization': 'Bearer ' + token,
     }
   }
-  const response = await fetch(collectionUrl, fetchConfig)
+  const response = await fetch(itemUrl, fetchConfig)
   if (response.ok) {
-    router.push('/')
+    router.push(`/collections/${collection_id}/items`)
   } else {
     const data = await response.json()
     errorMessage.value = data.detail
@@ -51,42 +52,39 @@ const deleteCollection = async () => {
 </script>
 
 <template>
-  <template v-if="collection">
-    <div class="collection-details-page">
-      <div class="collection-details-wrapper">
-        <div class="collection-details-name">
-          <h1>{{ collection.name }}</h1>
+  <template v-if="item">
+    <div class="item-details-page">
+      <div class="item-details-wrapper">
+        <div class="item-details-name">
+          <h1>{{ item.name }}</h1>
         </div>
-        <div class="collection-details-actions">
+        <div class="item-details-actions">
         <button
-          class="collection-details-update-button"
+          class="item-details-update-button"
           @click="router.push(`/collections/${collection_id}/update`)"
         >
-          Change Structure
+          Update Item
         </button>
         <button
-          class="collection-details-delete-button"
-          @click="deleteCollection"
+          class="item-details-delete-button"
+          @click="deleteItem"
         >
-          Delete Collection
+          Delete Item
         </button>
       </div>
         <div
-          class="collection-details-fields"
-          v-for="field in collection.fields"
+          class="item-details-fields"
+          v-for="field in item.fields"
         >
-          <h2 class="collection-details-field-name">{{ field.name }}</h2>
-          <ul>
-            <li class="collection-details-field-details">Data Type: {{ field.data_type }}</li>
-            <li class="collection-details-field-details">Required: {{ field.required }}</li>
-          </ul>
+          <div class="item-details-field-wrapper">
+            <h2 
+              class="item-details-field-name"
+            >
+              {{ field.name }}:
+              <span class="item-details-field-value">{{ field.val }}</span>
+            </h2>
+          </div>
         </div>
-        <button
-          class="collection-items-button"
-          @click="router.push(`/collections/${collection_id}/items`)"
-        >
-          View Items
-        </button>
       </div>
       <p
         class="error-message"
@@ -99,7 +97,7 @@ const deleteCollection = async () => {
 </template>
 
 <style>
-.collection-details-page {
+.item-details-page {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -108,7 +106,7 @@ const deleteCollection = async () => {
   border: 4px solid red;
 }
 
-.collection-details-wrapper {
+.item-details-wrapper {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -118,14 +116,15 @@ const deleteCollection = async () => {
   padding: 8px;
 }
 
-.collection-details-name {
+.item-details-name {
   text-align: center;
   font-weight: bold;
   font-size: larger;
   margin: 8px;
+  text-transform: uppercase;
 }
 
-.collection-details-fields {
+.item-details-fields {
   display: flex;
   flex-direction: column;
   border: 2px solid orange;
@@ -134,23 +133,28 @@ const deleteCollection = async () => {
   padding: 8px;
 }
 
-.collection-details-field-name {
-  place-self: center;
+.item-details-field-wrapper {
+  display: inline;
+}
+.item-details-field-name {
+  margin: 8px;
   font-weight: bold;
-  margin: 8px;
+  text-transform: uppercase;
 }
 
-.collection-details-field-details {
+.item-details-field-value {
   margin: 8px;
+  font-weight: 400;
+  text-transform: capitalize;
 }
 
-.collection-details-actions {
+.item-details-actions {
   display: flex;
   flex-direction: row;
   place-self: center;
 }
 
-.collection-details-update-button {
+.item-details-update-button {
   place-self: center;
   width: 10rem;
   margin: 16px;
@@ -161,23 +165,12 @@ const deleteCollection = async () => {
   font-weight: bold;
 }
 
-.collection-details-delete-button {
+.item-details-delete-button {
   place-self: center;
   width: 10rem;
   margin: 16px;
   padding: 8px;
   border: 1px solid red;
-  border-radius: 4px;
-  background-color: lightgray;
-  font-weight: bold;
-}
-
-.collection-items-button {
-  place-self: center;
-  width: 10rem;
-  margin: 16px;
-  padding: 8px;
-  border: 1px solid orange;
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;

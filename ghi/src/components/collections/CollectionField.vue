@@ -1,30 +1,44 @@
 <script setup>
 import { ref, defineProps, defineModel } from 'vue'
-import DataTypeDropdown from './DataTypeDropdown.vue'
+import DataTypeDropdown from '../common/DataTypeDropdown.vue'
 
-const fieldValues = defineModel()
+const collectionFields = defineModel()
 const props = defineProps(['index'])
 const index = ref(props.index)
-const dataTypes = ref(['Number', 'String', 'True/False'])
+const dropdownOptions = ref([
+  {
+    display: 'String',
+    val: 'str'
+  },
+  {
+    display: 'Number',
+    val: 'int'
+  },
+  {
+    display: 'True/False',
+    val: 'bool'
+  }
+])
 </script>
 
 <template class="collection-fields-wrapper">
   <h2 class="collection-fields-number">Field number: {{ index + 1 }}</h2>
   <form class="collection-fields-form">
     <input
-      id="field-name"
-      class="field-name"
-      v-model="fieldValues.name"
+      id="collection-field-name"
+      class="collection-field-name"
+      v-model="collectionFields.name"
       placeholder="Field name"
       required
     />
     <DataTypeDropdown
-      id="data-type"
-      :options="dataTypes"
-      v-model="fieldValues.data_type"
+      id="collection-data-type"
+      :options="dropdownOptions"
+      :placeholder="'Field Data Type'"
+      v-model="collectionFields.data_type"
     />
     <div class="required-checkbox-wrapper">
-      <input id="required-checkbox" class="required-checkbox-button" type="checkbox" v-model="fieldValues.required">
+      <input id="required-checkbox" class="required-checkbox-button" type="checkbox" v-model="collectionFields.required">
       <label class="required-checkbox-label">Field required?</label>
     </div>
   </form>
@@ -41,7 +55,7 @@ const dataTypes = ref(['Number', 'String', 'True/False'])
   margin-bottom: 8px;
 }
 
-.field-name {
+.collection-field-name {
   margin: 8px;
   padding: 8px;
   border: 1px solid black;

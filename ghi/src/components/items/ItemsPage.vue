@@ -1,18 +1,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import router from '../../router';
 import { useUser } from '../../store/UserStore';
-import Collection from './Collection.vue';
+import Item from './Item.vue'
 
 const userStore = useUser()
 const username = userStore.userData.username
 const token = userStore.token.access_token
 const API = import.meta.env.VITE_API_HOST
+const route = useRoute()
+const collection_id = route.params.collection_id
 
-const collections = ref(null)
+const items = ref(null)
 
 onMounted(async () => {
-  const collectionsUrl = API + `/${username}/collections`
+  const itemsUrl = API + `/${username}/collections/${collection_id}/items`
   const fetchConfig = {
     method: 'get',
     headers: {
@@ -20,37 +23,34 @@ onMounted(async () => {
       'Authorization': 'Bearer ' + token,
     }
   }
-  const response = await fetch(collectionsUrl, fetchConfig)
+  const response = await fetch(itemsUrl, fetchConfig)
   if (response.ok) {
-      const data = await response.json()
-      collections.value = data.collections
+    const data = await response.json()
+    items.value = data.items
   }
 })
 </script>
 
 <template>
-  <div class="collections-page-wrapper">
-    <div class="collections">
-      <template v-if="collections">
-        <div v-for="(_, index) in collections">
-          <Collection
-            v-model="collections[index]"
-            :index="index"
-          />
+  <div class="items-page-wrapper">
+    <div class="items">
+      <template v-if="items">
+        <div v-for="(_, index) in items">
+          <Item v-model="items[index]"/>
         </div>
       </template>
     </div>
     <button
-      class="new-collection-button"
-      @click="router.push('/collections/new')"
+      class="new-item-button"
+      @click="router.push(`/collections/${collection_id}/items/new`)"
     >
-      Create Collection
+      Add Item
     </button>
   </div>
 </template>
 
 <style>
-.collections-page-wrapper {
+.items-page-wrapper {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -59,7 +59,7 @@ onMounted(async () => {
   border: 4px solid red;
 }
 
-.collections {
+.items {
   place-self: center;
   display: flex;
   flex-direction: row;
@@ -67,7 +67,7 @@ onMounted(async () => {
   width: 100%;
 }
 
-.new-collection-button {
+.new-item-button {
   place-self: center;
   width: 10rem;
   margin: 16px;

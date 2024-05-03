@@ -1,12 +1,14 @@
 <script setup>
+import { defineModel } from 'vue';
 import router from '../../router';
-const props = defineProps(['collection'])
+
+const collection = defineModel()
 </script>
 
 <template>
-  <div class="collection-wrapper" @click="router.push(`/collections/${props.collection.id}`)">
-    <h1 class="collection-name">{{ props.collection.name }}</h1>
-    <h2>Fields: {{ props.collection.fields.length }}</h2>
+  <div class="collection-wrapper" @click="router.push(`/collections/${collection.id}`)">
+    <h1 class="collection-name">{{ collection.name }}</h1>
+    <h2>Fields: {{ collection.fields.length }}</h2>
   </div>
 </template>
 

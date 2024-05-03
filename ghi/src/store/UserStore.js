@@ -2,9 +2,9 @@ import { defineStore } from "pinia";
 import { useFetch } from '@vueuse/core'
 import router from '../router';
 
-const API_HOST = import.meta.env.VITE_API_HOST
-const tokenUrl = API_HOST + '/token'
-const usersUrl = API_HOST + '/users'
+const API = import.meta.env.VITE_API_HOST
+const tokenUrl = API + '/token'
+const usersUrl = API + '/users'
 
 export const useUser = defineStore('users', {
     state: () => ({
@@ -19,6 +19,10 @@ export const useUser = defineStore('users', {
         isLoggedIn: true
     }),
 
+    getters: {
+        userName: (state) => state.userData.username,
+    },
+
     actions: {
         async createUser(username, password) {
             const fetchConfig = {
@@ -32,7 +36,6 @@ export const useUser = defineStore('users', {
             }
         },
         async loginUser(username, password) {
-            const tokenUrl = API_HOST + '/token'
             const body = JSON.stringify(
                 `grant_type=&username=${username}&password=${password}&scope=&client_id=&client_secret=`
             )

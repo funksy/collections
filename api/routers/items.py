@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post(
-    "/collections/{username}/{collection_id}/items", response_model=ItemOut, tags=["items"]
+    "/{username}/collections/{collection_id}/items", response_model=ItemOut, tags=["items"]
 )
 def create_item(
     collection_id: str,
@@ -33,7 +33,7 @@ def create_item(
 
 
 @router.get(
-    "/collections/{username}/{collection_id}/items/{item_id}",
+    "/{username}/collections/{collection_id}/items/{item_id}",
     response_model=ItemOut,
     tags=["items"],
 )
@@ -45,7 +45,7 @@ def get_item(
     return repo.get_item(item_id)
 
 
-@router.delete("/collections/{username}/{collection_id}/items/{item_id}", tags=["items"])
+@router.delete("/{username}/collections/{collection_id}/items/{item_id}", tags=["items"])
 def delete_item(
     item_id: str,
     user_repo: UserRepository = Depends(),
@@ -56,7 +56,7 @@ def delete_item(
     return repo.delete_item(current_user, item_id)
 
 
-@router.put("/collections/{username}/{collection_id}/items/{item_id}", tags=["items"])
+@router.put("/{username}/collections/{collection_id}/items/{item_id}", tags=["items"])
 def update_item(
     item_id: str,
     item_update: ItemUpdate,
@@ -69,7 +69,7 @@ def update_item(
 
 
 @router.get(
-    "/collections/{username}/{collection_id}/items", response_model=ItemListOut, tags=["items"]
+    "/{username}/collections/{collection_id}/items", response_model=ItemListOut, tags=["items"]
 )
 def get_list_of_items(
     collection_id: str,

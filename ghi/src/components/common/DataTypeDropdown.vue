@@ -1,23 +1,36 @@
 <script setup>
 import {
   ref,
+  computed,
   defineProps,
   defineModel,
   onMounted,
-  onBeforeUnmount 
+  onBeforeUnmount
 } from 'vue';
 
 const dataType = defineModel()
-const props = defineProps(['options'])
+const props = defineProps({
+  options: {
+    type: Array,
+    required: true
+  },
+  placeholder: {
+    type: String
+  }  
+})
 const selectedOption = ref(null)
 const isDropdownVisible = ref(false)
 const dropdown = ref(null)
 
 const toggleOptionSelect = (option) => {
-  dataType.value = option
-  // selectedOption.value = option
+  dataType.value = option.val
+  selectedOption.value = option
   isDropdownVisible.value = false
 }
+
+const mappedOption = computed(() => {
+  return (selectedOption.value?.display || selectedOption.value)
+})
 
 const closeDropdown = (element) => {
   if (!dropdown.value.contains(element.target)) {
@@ -42,10 +55,10 @@ onBeforeUnmount(() => {
         tabindex="0"
       >
         <span v-if="dataType">
-          {{ dataType }}
+          {{ mappedOption }}
         </span>
         <span v-else v-bind:style="{opacity: 0.5}">
-          Field data type
+          {{ props.placeholder }}
         </span>
       </div>
       <div
@@ -58,7 +71,7 @@ onBeforeUnmount(() => {
           :key="index"
           @click="toggleOptionSelect(option)"
         >
-          {{ option.name || option }}
+          {{ option.display || option }}
         </div>
       </div>
     </div>

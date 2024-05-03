@@ -25,7 +25,7 @@ class RequiredFieldException(ValueError):
 
 class Field(BaseModel):
     name: str
-    val: str
+    val: str | int | bool
 
 
 class ItemIn(BaseModel):
@@ -57,15 +57,35 @@ class ItemsRepository:
                 collection_id=collection_id
             )
         except:
-            raise InvalidCollectionIdException()
-        collection_field_names = [field.name for field in collection.fields]
+            raise HTTPException(status_code=403, detail="invalid collection_id provided")
+        collection_field_names, collection_field_data_types = [], []
+        for field in collection.fields:
+            collection_field_names.append(field.name)
+            collection_field_data_types.append(field.data_type)
         collection_required_fields = [
             field.name for field in collection.fields if field.required == True
         ]
-        item_field_names = [field.name for field in item.fields]
-        for field in item_field_names:
-            if field not in collection_field_names:
-                raise HTTPException(status_code=403, detail="invalid data structure")
+
+        item_field_names, item_field_data_types = [], []
+        for field in item.fields:
+            item_field_names.append(field.name)
+            item_field_data_types.append(str(type(field.val)))
+
+        if collection_field_names != item_field_names:
+            name_mismatch = True
+        else:
+            name_mismatch = False
+        
+        # TODO Figure out how to do type checking of input data
+        # data_type_mismatch = False
+        # for i in range(len(collection_field_data_types)):
+        #     if not isinstance(item_field_data_types[i], collection_field_data_types[i]):
+        #         continue
+        #     else:
+        #         data_type_match = False
+        
+        if name_mismatch:
+            raise HTTPException(status_code=403, detail="invalid data structure")
         for field in collection_required_fields:
             if field not in item_field_names:
                 raise HTTPException(status_code=403, detail="required field violation")
