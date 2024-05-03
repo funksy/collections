@@ -18,7 +18,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post(
-    "/{username}/collections/{collection_id}/items", response_model=ItemOut, tags=["items"]
+    "/{username}/collections/{collection_id}/items",
+    response_model=ItemOut,
+    tags=["items"],
 )
 def create_item(
     collection_id: str,
@@ -29,7 +31,6 @@ def create_item(
 ):
     owner = user_repo.get_current_user(token).username
     return repo.create_item(owner, collection_id, data)
-
 
 
 @router.get(
@@ -45,7 +46,9 @@ def get_item(
     return repo.get_item(item_id)
 
 
-@router.delete("/{username}/collections/{collection_id}/items/{item_id}", tags=["items"])
+@router.delete(
+    "/{username}/collections/{collection_id}/items/{item_id}", tags=["items"]
+)
 def delete_item(
     item_id: str,
     user_repo: UserRepository = Depends(),
@@ -69,7 +72,9 @@ def update_item(
 
 
 @router.get(
-    "/{username}/collections/{collection_id}/items", response_model=ItemListOut, tags=["items"]
+    "/{username}/collections/{collection_id}/items",
+    response_model=ItemListOut,
+    tags=["items"],
 )
 def get_list_of_items(
     collection_id: str,

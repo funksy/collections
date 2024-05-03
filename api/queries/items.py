@@ -57,7 +57,9 @@ class ItemsRepository:
                 collection_id=collection_id
             )
         except:
-            raise HTTPException(status_code=403, detail="invalid collection_id provided")
+            raise HTTPException(
+                status_code=403, detail="invalid collection_id provided"
+            )
         collection_field_names, collection_field_data_types = [], []
         for field in collection.fields:
             collection_field_names.append(field.name)
@@ -75,7 +77,7 @@ class ItemsRepository:
             name_mismatch = True
         else:
             name_mismatch = False
-        
+
         # TODO Figure out how to do type checking of input data
         # data_type_mismatch = False
         # for i in range(len(collection_field_data_types)):
@@ -83,7 +85,7 @@ class ItemsRepository:
         #         continue
         #     else:
         #         data_type_match = False
-        
+
         if name_mismatch:
             raise HTTPException(status_code=403, detail="invalid data structure")
         for field in collection_required_fields:
@@ -118,11 +120,12 @@ class ItemsRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
         if item["owner"] != current_user:
-            raise HTTPException(status_code=401, detail="not authorized to delete specified item")
+            raise HTTPException(
+                status_code=401, detail="not authorized to delete specified item"
+            )
         result = db.items.delete_one({"_id": ObjectId(item_id)})
         if result.deleted_count > 0:
             return {"message": "Successfully deleted"}
-        
 
     def update_item(self, current_user: str, item_id: str, item_update: ItemUpdate):
         try:
@@ -130,19 +133,20 @@ class ItemsRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid item_id")
         if item["owner"] != current_user:
-            raise HTTPException(status_code=401, detail="not authorized to update specified item")
+            raise HTTPException(
+                status_code=401, detail="not authorized to update specified item"
+            )
         item_update = {
             "name": item["name"],
             "owner": item["owner"],
             "collection_id": item["collection_id"],
             "fields": [field.dict() for field in item_update.fields],
         }
-        self.check_fields(item=ItemIn(**item_update), collection_id=item["collection_id"])
-        result = db.items.update_one(
-            {"_id": ObjectId(item_id)}, {"$set": item_update}
+        self.check_fields(
+            item=ItemIn(**item_update), collection_id=item["collection_id"]
         )
+        result = db.items.update_one({"_id": ObjectId(item_id)}, {"$set": item_update})
         return self.get_item(item_id)
-        
 
     def get_list_of_items(self, collection_id) -> ItemListOut:
         items = []

@@ -62,11 +62,12 @@ class CollectionRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid collection_id")
         if collection["owner"] != current_user:
-            raise HTTPException(status_code=401, detail="not authorized to delete specified collection")
+            raise HTTPException(
+                status_code=401, detail="not authorized to delete specified collection"
+            )
         result = db.collections.delete_one({"_id": ObjectId(collection_id)})
         if result.deleted_count > 0:
             return {"message": "collection deleted"}
-        
 
     def update_collection(
         self, current_user: str, collection_id: str, collection_update: CollectionUpdate
@@ -76,17 +77,18 @@ class CollectionRepository:
         except:
             raise HTTPException(status_code=404, detail="invalid collection_id")
         if collection["owner"] != current_user:
-            raise HTTPException(status_code=401, detail="not authorized to update specified collection")
+            raise HTTPException(
+                status_code=401, detail="not authorized to update specified collection"
+            )
         collection_update = {
             "name": collection_update.name,
             "owner": collection["owner"],
-            "fields": [field.dict() for field in collection_update.fields]
+            "fields": [field.dict() for field in collection_update.fields],
         }
         result = db.collections.update_one(
             {"_id": ObjectId(collection_id)}, {"$set": collection_update}
         )
         return self.get_collection(collection_id)
-        
 
     def get_list_of_collections_by_owner(self, username) -> CollectionListOut:
         collections = []

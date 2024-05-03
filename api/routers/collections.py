@@ -14,7 +14,9 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@router.post("/{username}/collections", response_model=CollectionOut, tags=["collections"])
+@router.post(
+    "/{username}/collections", response_model=CollectionOut, tags=["collections"]
+)
 def create_collection(
     collection: CollectionIn,
     user_repo: UserRepository = Depends(),
@@ -26,7 +28,9 @@ def create_collection(
 
 
 @router.get(
-    "/{username}/collections/{collection_id}", response_model=CollectionOut, tags=["collections"]
+    "/{username}/collections/{collection_id}",
+    response_model=CollectionOut,
+    tags=["collections"],
 )
 def get_collection(
     collection_id: str,
@@ -59,17 +63,9 @@ def update_collection(
     return repo.update_collection(current_user, collection_id, collection_update)
 
 
-# @router.get("/collections/me", response_model=CollectionListOut, tags=["collections"])
-# def get_collections_by_current_user(
-#     user_repo: UserRepository = Depends(),
-#     repo: CollectionRepository = Depends(),
-#     token: str = Depends(oauth2_scheme),
-# ):
-#     current_user = user_repo.get_current_user(token).username
-#     return repo.get_list_of_collections_by_owner(current_user)
-
-
-@router.get("/{username}/collections", response_model=CollectionListOut, tags=["collections"])
+@router.get(
+    "/{username}/collections", response_model=CollectionListOut, tags=["collections"]
+)
 def get_collections_by_owner(
     username: str,
     repo: CollectionRepository = Depends(),
