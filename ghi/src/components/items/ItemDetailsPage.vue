@@ -59,12 +59,12 @@ const deleteItem = async () => {
           <h1>{{ item.name }}</h1>
         </div>
         <div class="item-details-actions">
-        <button
+        <!-- <button
           class="item-details-update-button"
           @click="router.push(`/collections/${collection_id}/update`)"
         >
           Update Item
-        </button>
+        </button> -->
         <button
           class="item-details-delete-button"
           @click="deleteItem"

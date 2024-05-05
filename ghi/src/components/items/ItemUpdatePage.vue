@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUser } from '../../store/UserStore';
-import CollectionField from './CollectionField.vue'
+import ItemField from './ItemField.vue';
 import router from '../../router';
 
 const userStore = useUser()
@@ -11,109 +11,108 @@ const token = userStore.token.access_token
 const API = import.meta.env.VITE_API_HOST
 const route = useRoute()
 const collection_id = route.params.collection_id
+const item_id = route.params.item_id
 
-const collectionData = ref({
+const itemData = ref({
   name: null,
   fields: [
     {
       name: null,
-      data_type: null,
-      required: false
+      val: null
     }
   ]
 })
-const minumumCollectionField = ref(null)
 const errorMessage = ref(null)
 
-const formValidation = () => {
-  let formName = false
-  if (collectionData.value.name) {
-    formName = true
-  }
-  let formFields = true
-  for (const field of collectionData.value.fields) {
-    if (!field.name || !field.data_type) {
-      formFields = false
-    }
-  }
-  return formName && formFields
-}
+// const formValidation = () => {
+//   let formName = false
+//   if (collectionData.value.name) {
+//     formName = true
+//   }
+//   let formFields = true
+//   for (const field of collectionData.value.fields) {
+//     if (!field.name || !field.data_type) {
+//       formFields = false
+//     }
+//   }
+//   return formName && formFields
+// }
 
-const newField = () => {
-  collectionData.value.fields.push({
-    name: null,
-    data_type: null,
-    required: false
-  })
-}
-const removeField = (index) => {
-  collectionData.value.fields.splice(index, 1)
-  if (collectionData.value.fields.length < 1) {
-    newField()
-    minumumCollectionField.value = 'You must have at least 1 field defined'
-  }
-}
+// const newField = () => {
+//   collectionData.value.fields.push({
+//     name: null,
+//     data_type: null,
+//     required: false
+//   })
+// }
+// const removeField = (index) => {
+//   collectionData.value.fields.splice(index, 1)
+//   if (collectionData.value.fields.length < 1) {
+//     newField()
+//     minumumCollectionField.value = 'You must have at least 1 field defined'
+//   }
+// }
 
-const updateCollection = async (e) => {
-  e.preventDefault()
-  if (formValidation()) {
-    const collectionsUrl = API + `/${username}/collections/${collection_id}`
-    const body = JSON.stringify(collectionData.value)
-    const fetchConfig = {
-      method: 'put',
-      body: body,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-      }
-    }
-    const response = await fetch(collectionsUrl, fetchConfig)
-    if (response.ok) {
-      // const data = await response.json()
-      router.push(`/collections/${collection_id}`)
-    }
-  } else {
-    errorMessage.value = "Please ensure all fields are completed"
-  }
-}
+// const updateCollection = async (e) => {
+//   e.preventDefault()
+//   if (formValidation()) {
+//     const collectionsUrl = API + `/${username}/collections/${collection_id}`
+//     const body = JSON.stringify(collectionData.value)
+//     const fetchConfig = {
+//       method: 'put',
+//       body: body,
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Bearer ' + token,
+//       }
+//     }
+//     const response = await fetch(collectionsUrl, fetchConfig)
+//     if (response.ok) {
+//       // const data = await response.json()
+//       router.push(`/collections/${collection_id}`)
+//     }
+//   } else {
+//     errorMessage.value = "Please ensure all fields are completed"
+//   }
+// }
 
-const getCollection = async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
-  const fetchConfig = {
-    method: 'get',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(`${collectionUrl}`, fetchConfig)
-  if (response.ok) {
-      const data = await response.json()
-      collectionData.value = {
-        name: data.name,
-        fields: data.fields
-      }
-  }
-}
+// const getCollection = async () => {
+//   const collectionUrl = API + `/${username}/collections/${collection_id}`
+//   const fetchConfig = {
+//     method: 'get',
+//     headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Bearer ' + token,
+//     }
+//   }
+//   const response = await fetch(`${collectionUrl}`, fetchConfig)
+//   if (response.ok) {
+//       const data = await response.json()
+//       collectionData.value = {
+//         name: data.name,
+//         fields: data.fields
+//       }
+//   }
+// }
 
-onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
-  const fetchConfig = {
-    method: 'get',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(`${collectionUrl}`, fetchConfig)
-  if (response.ok) {
-      const data = await response.json()
-      collectionData.value = {
-        name: data.name,
-        fields: data.fields
-      }
-  }
-})
+// onMounted(async () => {
+//   const collectionUrl = API + `/${username}/collections/${collection_id}`
+//   const fetchConfig = {
+//     method: 'get',
+//     headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Bearer ' + token,
+//     }
+//   }
+//   const response = await fetch(`${collectionUrl}`, fetchConfig)
+//   if (response.ok) {
+//       const data = await response.json()
+//       collectionData.value = {
+//         name: data.name,
+//         fields: data.fields
+//       }
+//   }
+// })
 </script>
 
 <template>
@@ -130,7 +129,7 @@ onMounted(async () => {
         />
         <h1 class="update-collection-fields-header">Collection Fields</h1>
         <p class="error-message" v-if="minumumCollectionField">{{ minumumCollectionField }}</p>
-        <ul class="update-collection-fields" v-for="(_, index) in collectionData.fields">
+        <ul class="update-collection-fields" v-for="(field, index) in collectionData.fields">
           <CollectionField
             v-model="collectionData.fields[index]"
             :index="index"

@@ -60,37 +60,41 @@ class ItemsRepository:
             raise HTTPException(
                 status_code=403, detail="invalid collection_id provided"
             )
+        
         collection_field_names, collection_field_data_types = [], []
         for field in collection.fields:
             collection_field_names.append(field.name)
-            collection_field_data_types.append(field.data_type)
+            match field.data_type:
+                case 'str':
+                    collection_field_data_types.append(str)
+                case 'int':
+                    collection_field_data_types.append(int)
+                case 'bool':
+                    collection_field_data_types.append(bool)
         collection_required_fields = [
             field.name for field in collection.fields if field.required == True
         ]
-
+        
         item_field_names, item_field_data_types = [], []
         for field in item.fields:
             item_field_names.append(field.name)
-            item_field_data_types.append(str(type(field.val)))
+            item_field_data_types.append(type(field.val))
 
         if collection_field_names != item_field_names:
             name_mismatch = True
         else:
             name_mismatch = False
 
-        # TODO Figure out how to do type checking of input data
-        # data_type_mismatch = False
-        # for i in range(len(collection_field_data_types)):
-        #     if not isinstance(item_field_data_types[i], collection_field_data_types[i]):
-        #         continue
-        #     else:
-        #         data_type_match = False
-
-        if name_mismatch:
+        if collection_field_data_types != item_field_data_types:
+            data_type_mismatch = True
+        else:
+            data_type_mismatch = False
+        
+        if name_mismatch or data_type_mismatch:
             raise HTTPException(status_code=403, detail="invalid data structure")
         for field in collection_required_fields:
             if field not in item_field_names:
-                raise HTTPException(status_code=403, detail="required field violation")
+                raise HTTPException(status_code=403, detail="required field incomplete")
 
     def create_item(self, owner: str, collection_id: str, item: ItemIn) -> ItemOut:
         self.check_fields(item=item, collection_id=collection_id)

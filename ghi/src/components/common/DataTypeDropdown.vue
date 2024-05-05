@@ -5,7 +5,8 @@ import {
   defineProps,
   defineModel,
   onMounted,
-  onBeforeUnmount
+  onBeforeUnmount,
+  watch,
 } from 'vue';
 
 const dataType = defineModel()
@@ -18,6 +19,13 @@ const props = defineProps({
     type: String
   }  
 })
+const optionMap = {
+  "str": "String",
+  "int": "Number",
+  "bool": "True/False",
+  "true": "True",
+  "false": "False",
+}
 const selectedOption = ref(null)
 const isDropdownVisible = ref(false)
 const dropdown = ref(null)
@@ -29,7 +37,7 @@ const toggleOptionSelect = (option) => {
 }
 
 const mappedOption = computed(() => {
-  return (selectedOption.value?.display || selectedOption.value)
+  return (optionMap[dataType.value])
 })
 
 const closeDropdown = (element) => {
@@ -54,7 +62,7 @@ onBeforeUnmount(() => {
         @focus="isDropdownVisible = true"
         tabindex="0"
       >
-        <span v-if="dataType">
+        <span v-if="dataType !== null">
           {{ mappedOption }}
         </span>
         <span v-else v-bind:style="{opacity: 0.5}">

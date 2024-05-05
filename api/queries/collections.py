@@ -10,6 +10,7 @@ client = pymongo.MongoClient(os.environ.get("DATABASE_URL"))
 db = client.collections_db
 
 
+# TODO store "Type" instead of a str representation of it
 class Field(BaseModel):
     name: str
     data_type: str
@@ -65,6 +66,7 @@ class CollectionRepository:
             raise HTTPException(
                 status_code=401, detail="not authorized to delete specified collection"
             )
+        deleted_items = db.items.delete_many({"collection_id": collection_id})
         result = db.collections.delete_one({"_id": ObjectId(collection_id)})
         if result.deleted_count > 0:
             return {"message": "collection deleted"}
