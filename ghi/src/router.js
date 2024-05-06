@@ -11,6 +11,7 @@ import CollectionUpdatePage from "./components/collections/CollectionUpdatePage.
 import ItemsPage from "./components/items/ItemsPage.vue"
 import ItemDetailsPage from "./components/items/ItemDetailsPage.vue"
 import NewItemPage from "./components/items/NewItemPage.vue"
+import ItemUpdatePage from "./components/items/ItemUpdatePage.vue"
 
 const routes = [
     {path: '/login', component: LoginPage},
@@ -24,6 +25,7 @@ const routes = [
     {path: '/collections/:collection_id/items', component: ItemsPage},
     {path: '/collections/:collection_id/items/:item_id', component: ItemDetailsPage},
     {path: '/collections/:collection_id/items/new', component: NewItemPage},
+    {path: '/collections/:collection_id/items/:item_id/update', component: ItemUpdatePage}
 ]
 
 const router = createRouter({

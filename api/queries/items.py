@@ -99,6 +99,7 @@ class ItemsRepository:
             if field not in item_field_names:
                 raise HTTPException(status_code=403, detail="required field incomplete")
 
+    # TODO make all inputs lowercase
     def create_item(self, owner: str, collection_id: str, item: ItemIn) -> ItemOut:
         self.check_fields(item=item, collection_id=collection_id)
         new_item = {
@@ -134,6 +135,7 @@ class ItemsRepository:
         if result.deleted_count > 0:
             return {"message": "Successfully deleted"}
 
+    # TODO make all inputs lowercase
     def update_item(self, current_user: str, item_id: str, item_update: ItemUpdate):
         try:
             item = db.items.find_one({"_id": ObjectId(item_id)})

@@ -44,29 +44,23 @@ onMounted(async () => {
 })
 
 
-// const formValidation = () => {
-//   let formName = false
-//   if (collectionData.value.name) {
-//     formName = true
-//   } else {
-//     console.log('no form name')
-//   }
-//   let formFields = true
-//   for (const field of collectionData.value.fields) {
-//     if (!field.name || !field.data_type) {
-//       formFields = false
-//       console.log('something about fields failed')
-//     }
-//   }
-//   return formName && formFields
-// }
+const formValidation = () => {
+  let formName = false
+  if (itemData.value.name) {
+    formName = true
+  }
+  let formFields = true
+  for (const field of itemData.value.fields) {
+    if (!field.val) {
+      formFields = false
+    }
+  }
+  return formName && formFields
+}
 
 const createItem = async (e) => {
   e.preventDefault()
-  if (
-    // formValidation()
-    true
-  ) {
+  if (formValidation()) {
     const itemsUrl = API + `/${username}/collections/${collection_id}/items`
     const body = JSON.stringify(itemData.value)
     const fetchConfig = {

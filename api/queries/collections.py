@@ -36,6 +36,7 @@ class CollectionListOut(BaseModel):
 
 
 class CollectionRepository:
+    # TODO make all inputs lowercase
     def create_collection(self, owner, collection: CollectionIn) -> CollectionOut:
         new_collection = {
             "name": collection.name,
@@ -70,6 +71,7 @@ class CollectionRepository:
         if result.deleted_count > 0:
             return {"message": "collection deleted"}
 
+    # TODO make all inputs lowercase
     def update_collection(
         self, current_user: str, collection_id: str, collection_update: CollectionUpdate
     ) -> CollectionOut:

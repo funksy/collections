@@ -25,19 +25,19 @@ const dropdownOptions = ref([
       v-if="dataType === 'str'"
       type="text"
       v-model="field.val"
-      placeholder="Please input your string"
+      placeholder="Please input the string"
     />
     <input
       class="item-field-input-number"
       v-if="dataType === 'int'"
       type="number"
       v-model="field.val"
-      placeholder="Please input a number"
+      placeholder="Please input the number"
     />
     <DataTypeDropdown
       v-if="dataType === 'bool'"
       :options="dropdownOptions"
-      :placeholder="'True/False?'"
+      :placeholder="'Select true or false?'"
       v-model="field.val"
     />
   </form>

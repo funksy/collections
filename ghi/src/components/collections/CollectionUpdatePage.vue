@@ -12,16 +12,7 @@ const API = import.meta.env.VITE_API_HOST
 const route = useRoute()
 const collection_id = route.params.collection_id
 
-const collectionData = ref({
-  name: null,
-  fields: [
-    {
-      name: null,
-      data_type: null,
-      required: false
-    }
-  ]
-})
+const collectionData = ref(null)
 const minumumCollectionField = ref(null)
 const errorMessage = ref(null)
 
@@ -69,7 +60,6 @@ const updateCollection = async (e) => {
     }
     const response = await fetch(collectionsUrl, fetchConfig)
     if (response.ok) {
-      // const data = await response.json()
       router.push(`/collections/${collection_id}`)
     }
   } else {
@@ -86,33 +76,15 @@ const getCollection = async () => {
         'Authorization': 'Bearer ' + token,
     }
   }
-  const response = await fetch(`${collectionUrl}`, fetchConfig)
+  const response = await fetch(collectionUrl, fetchConfig)
   if (response.ok) {
       const data = await response.json()
-      collectionData.value = {
-        name: data.name,
-        fields: data.fields
-      }
+      collectionData.value = data
   }
 }
 
 onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
-  const fetchConfig = {
-    method: 'get',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(`${collectionUrl}`, fetchConfig)
-  if (response.ok) {
-      const data = await response.json()
-      collectionData.value = {
-        name: data.name,
-        fields: data.fields
-      }
-  }
+  getCollection()
 })
 </script>
 
@@ -120,14 +92,8 @@ onMounted(async () => {
   <div class="update-collection-page">
     <h1 v-if="!collectionData">Loading...</h1>
     <div class="update-collection-form-wrapper" v-else>
-      <h1 class="update-collection-header">New Collection</h1>
+      <h1 class="update-collection-header">{{ collectionData.name }}</h1>
       <form class="update-collection-form">
-        <input
-          class="update-collection-name"
-          v-model="collectionData.name"
-          placeholder="Collection Name"
-          required
-        />
         <h1 class="update-collection-fields-header">Collection Fields</h1>
         <p class="error-message" v-if="minumumCollectionField">{{ minumumCollectionField }}</p>
         <ul class="update-collection-fields" v-for="(_, index) in collectionData.fields">
@@ -152,10 +118,10 @@ onMounted(async () => {
         </button>
         <button
           type="button"
-          class="reset-fields-button"
+          class="reset-collection-button"
           @click="getCollection"
         >
-          Reset Fields
+          Reset Data
         </button>
         <button
           type="submit"
@@ -198,12 +164,11 @@ onMounted(async () => {
 .update-collection-header {
   text-align: center;
   font-weight: bold;
-  font-size: larger;
+  font-size: xx-large;
   margin: 8px;
 }
 
 .update-collection-form {
-  margin: 8px;
   display: flex;
   flex-direction: column;
 }
@@ -253,7 +218,7 @@ onMounted(async () => {
   font-size: smaller;
 }
 
-.reset-fields-button {
+.reset-collection-button {
   place-self: center;
   width: 10rem;
   margin-top: 16px;

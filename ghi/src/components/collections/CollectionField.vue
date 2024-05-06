@@ -3,8 +3,6 @@ import { ref, defineProps, defineModel } from 'vue'
 import DataTypeDropdown from '../common/DataTypeDropdown.vue'
 
 const collectionFields = defineModel()
-const props = defineProps(['index'])
-const index = ref(props.index)
 const dropdownOptions = ref([
   {
     display: 'String',
@@ -22,7 +20,6 @@ const dropdownOptions = ref([
 </script>
 
 <template class="collection-fields-wrapper">
-  <h2 class="collection-fields-number">Field number: {{ index + 1 }}</h2>
   <form class="collection-fields-form">
     <input
       id="collection-field-name"

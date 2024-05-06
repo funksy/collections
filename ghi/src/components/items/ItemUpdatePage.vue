@@ -13,155 +13,107 @@ const route = useRoute()
 const collection_id = route.params.collection_id
 const item_id = route.params.item_id
 
-const itemData = ref({
-  name: null,
-  fields: [
-    {
-      name: null,
-      val: null
-    }
-  ]
-})
+const itemData = ref(null)
+const collectionData = ref(null)
 const errorMessage = ref(null)
 
-// const formValidation = () => {
-//   let formName = false
-//   if (collectionData.value.name) {
-//     formName = true
-//   }
-//   let formFields = true
-//   for (const field of collectionData.value.fields) {
-//     if (!field.name || !field.data_type) {
-//       formFields = false
-//     }
-//   }
-//   return formName && formFields
-// }
+const formValidation = () => {
+  let formName = false
+  if (itemData.value.name) {
+    formName = true
+  }
+  let formFields = true
+  for (const field of itemData.value.fields) {
+    if (!field.val) {
+      formFields = false
+    }
+  }
+  return formName && formFields
+}
 
-// const newField = () => {
-//   collectionData.value.fields.push({
-//     name: null,
-//     data_type: null,
-//     required: false
-//   })
-// }
-// const removeField = (index) => {
-//   collectionData.value.fields.splice(index, 1)
-//   if (collectionData.value.fields.length < 1) {
-//     newField()
-//     minumumCollectionField.value = 'You must have at least 1 field defined'
-//   }
-// }
+const updateItem = async (e) => {
+  e.preventDefault()
+  if (formValidation()) {
+    const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
+    const body = JSON.stringify(itemData.value)
+    const fetchConfig = {
+      method: 'put',
+      body: body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      }
+    }
+    const response = await fetch(itemUrl, fetchConfig)
+    if (response.ok) {
+      router.push(`/collections/${collection_id}/items/${item_id}`)
+    }
+  } else {
+    errorMessage.value = "Please ensure all fields are completed"
+  }
+}
 
-// const updateCollection = async (e) => {
-//   e.preventDefault()
-//   if (formValidation()) {
-//     const collectionsUrl = API + `/${username}/collections/${collection_id}`
-//     const body = JSON.stringify(collectionData.value)
-//     const fetchConfig = {
-//       method: 'put',
-//       body: body,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer ' + token,
-//       }
-//     }
-//     const response = await fetch(collectionsUrl, fetchConfig)
-//     if (response.ok) {
-//       // const data = await response.json()
-//       router.push(`/collections/${collection_id}`)
-//     }
-//   } else {
-//     errorMessage.value = "Please ensure all fields are completed"
-//   }
-// }
+const getItem = async () => {
+  console.log('test')
+  const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
+  const fetchConfig = {
+    method: 'get',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+    }
+  }
+  const response = await fetch(itemUrl, fetchConfig)
+  if (response.ok) {
+      const data = await response.json()
+      itemData.value = data
+  }
+}
 
-// const getCollection = async () => {
-//   const collectionUrl = API + `/${username}/collections/${collection_id}`
-//   const fetchConfig = {
-//     method: 'get',
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer ' + token,
-//     }
-//   }
-//   const response = await fetch(`${collectionUrl}`, fetchConfig)
-//   if (response.ok) {
-//       const data = await response.json()
-//       collectionData.value = {
-//         name: data.name,
-//         fields: data.fields
-//       }
-//   }
-// }
-
-// onMounted(async () => {
-//   const collectionUrl = API + `/${username}/collections/${collection_id}`
-//   const fetchConfig = {
-//     method: 'get',
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer ' + token,
-//     }
-//   }
-//   const response = await fetch(`${collectionUrl}`, fetchConfig)
-//   if (response.ok) {
-//       const data = await response.json()
-//       collectionData.value = {
-//         name: data.name,
-//         fields: data.fields
-//       }
-//   }
-// })
+onMounted(async () => {
+  getItem()
+  const collectionUrl = API + `/${username}/collections/${collection_id}`
+  const fetchConfig = {
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+    }
+  }
+  const response = await fetch(collectionUrl, fetchConfig)
+  if (response.ok) {
+    const data = await response.json()
+    collectionData.value = data
+  }
+})
 </script>
 
 <template>
-  <div class="update-collection-page">
-    <h1 v-if="!collectionData">Loading...</h1>
-    <div class="update-collection-form-wrapper" v-else>
-      <h1 class="update-collection-header">New Collection</h1>
-      <form class="update-collection-form">
-        <input
-          class="update-collection-name"
-          v-model="collectionData.name"
-          placeholder="Collection Name"
-          required
-        />
-        <h1 class="update-collection-fields-header">Collection Fields</h1>
-        <p class="error-message" v-if="minumumCollectionField">{{ minumumCollectionField }}</p>
-        <ul class="update-collection-fields" v-for="(field, index) in collectionData.fields">
-          <CollectionField
-            v-model="collectionData.fields[index]"
-            :index="index"
+  <div class="update-item-page">
+    <h1 v-if="!itemData || !collectionData">Loading...</h1>
+    <div class="update-item-form-wrapper" v-else>
+      <h1 class="update-item-header">{{ itemData.name }}</h1>
+      <form class="update-item-form">
+        <h1 class="update-item-fields-header">Item Fields</h1>
+        <ul class="update-item-fields" v-for="(_, index) in itemData.fields">
+          <itemField
+            v-model="itemData.fields[index]"
+            :fieldDataType="collectionData.fields[index].data_type"
           />
-          <button
-            type="button"
-            class="remove-field-button"
-            @click="removeField(index)"
-          >
-            Remove Field
-          </button>
         </ul>
         <button
           type="button"
-          class="add-field-button"
-          @click="newField"
+          class="reset-item-button"
+          @click="getItem"
         >
-          Add New Field
-        </button>
-        <button
-          type="button"
-          class="reset-fields-button"
-          @click="getCollection"
-        >
-          Reset Fields
+          Reset Data
         </button>
         <button
           type="submit"
-          class="collection-update-button"
-          @click="updateCollection"
+          class="item-update-button"
+          @click="updateItem"
         >
-          Update Collection
+          Update item
         </button>
         <p
           v-if="errorMessage"
@@ -175,7 +127,7 @@ const errorMessage = ref(null)
 </template>
 
 <style>
-.update-collection-page {
+.update-item-page {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -184,7 +136,7 @@ const errorMessage = ref(null)
   border: 4px solid red;
 }
 
-.update-collection-form-wrapper {
+.update-item-form-wrapper {
   place-self: center;
   display: flex;
   flex-direction: column;
@@ -194,34 +146,32 @@ const errorMessage = ref(null)
   padding: 8px;
 }
 
-.update-collection-header {
+.update-item-header {
   text-align: center;
   font-weight: bold;
-  font-size: larger;
-  margin: 8px;
+  font-size: xx-large;
 }
 
-.update-collection-form {
-  margin: 8px;
+.update-item-form {
   display: flex;
   flex-direction: column;
 }
 
-.update-collection-name {
+.update-item-name {
   margin: 8px;
   padding: 8px;
   border: 1px solid black;
   border-radius: 4px;
 }
 
-.update-collection-fields-header {
+.update-item-fields-header {
   text-align: center;
   font-weight: bold;
   font-size: larger;
   margin: 16px;
 }
 
-.update-collection-fields {
+.update-item-fields {
   display: flex;
   flex-direction: column;
   margin-top: 8px;
@@ -230,29 +180,7 @@ const errorMessage = ref(null)
   border: 1px solid orange;
 }
 
-.remove-field-button {
-  place-self: center;
-  width: 6rem;
-  margin: 4px;
-  padding: 2px;
-  border: 2px solid red;
-  border-radius: 4px;
-  background-color: lightgray;
-  font-size: smaller;
-}
-
-.add-field-button {
-  place-self: center;
-  width: 6rem;
-  margin: 4px;
-  padding: 2px;
-  border: 1px solid black;
-  border-radius: 4px;
-  background-color: lightgray;
-  font-size: smaller;
-}
-
-.reset-fields-button {
+.reset-item-button {
   place-self: center;
   width: 10rem;
   margin-top: 16px;
@@ -263,7 +191,7 @@ const errorMessage = ref(null)
   font-weight: bold;
 }
 
-.collection-update-button {
+.item-update-button {
   place-self: center;
   width: 10rem;
   margin-top: 16px;
