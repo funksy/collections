@@ -34,6 +34,18 @@ def create_item(
 
 
 @router.get(
+    "/{username}/collections/{collection_id}/items/count",
+    tags=["items"],
+)
+def get_count_of_items_by_collection(
+    collection_id: str,
+    repo: ItemsRepository = Depends(),
+    token: str = Depends(oauth2_scheme)
+):
+    return repo.get_count_of_items_by_collection(collection_id)
+
+
+@router.get(
     "/{username}/collections/{collection_id}/items/{item_id}",
     response_model=ItemOut,
     tags=["items"],

@@ -164,3 +164,9 @@ class ItemsRepository:
             item["id"] = str(item["_id"])
             items.append(item)
         return ItemListOut(items=items)
+
+    def get_count_of_items_by_collection(self, collection_id) -> int:
+        items = self.get_list_of_items(collection_id).items
+        return {
+            "count": len(items)
+        }
