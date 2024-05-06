@@ -51,6 +51,15 @@ class ItemsRepository:
     def __init__(self, collections_repo: CollectionRepository = Depends()):
         self.collections_repo = collections_repo
 
+    def field_decoder(self, field):
+        match field.data_type:
+            case 'str':
+                return str
+            case 'int':
+                return int
+            case 'bool':
+                return bool
+    
     def check_fields(self, item: ItemIn, collection_id: str):
         try:
             collection = self.collections_repo.get_collection(
@@ -64,13 +73,7 @@ class ItemsRepository:
         collection_field_names, collection_field_data_types = [], []
         for field in collection.fields:
             collection_field_names.append(field.name)
-            match field.data_type:
-                case 'str':
-                    collection_field_data_types.append(str)
-                case 'int':
-                    collection_field_data_types.append(int)
-                case 'bool':
-                    collection_field_data_types.append(bool)
+            collection_field_data_types.append((self.field_decoder(field)))
         collection_required_fields = [
             field.name for field in collection.fields if field.required == True
         ]

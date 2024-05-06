@@ -10,7 +10,6 @@ client = pymongo.MongoClient(os.environ.get("DATABASE_URL"))
 db = client.collections_db
 
 
-# TODO store "Type" instead of a str representation of it
 class Field(BaseModel):
     name: str
     data_type: str
