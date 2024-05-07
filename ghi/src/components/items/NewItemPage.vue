@@ -1,85 +1,83 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import router from '../../router';
-import { useUser } from '../../store/UserStore';
-import ItemField from './ItemField.vue'
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import router from "../../router";
+import { useUser } from "../../store/UserStore";
+import ItemField from "./ItemField.vue";
 
-
-const userStore = useUser()
-const username = userStore.userData.username
-const token = userStore.token.access_token
-const API = import.meta.env.VITE_API_HOST
-const route = useRoute()
-const collection_id = route.params.collection_id
+const userStore = useUser();
+const username = userStore.userData.username;
+const token = userStore.token.access_token;
+const API = import.meta.env.VITE_API_HOST;
+const route = useRoute();
+const collection_id = route.params.collection_id;
 
 const itemData = ref({
   name: null,
-  fields: []
-})
-const collection = ref(null)
-const errorMessage = ref(null)
+  fields: [],
+});
+const collection = ref(null);
+const errorMessage = ref(null);
 
 onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
+  const collectionUrl = API + `/${username}/collections/${collection_id}`;
   const fetchConfig = {
-    method: 'get',
+    method: "get",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(collectionUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(collectionUrl, fetchConfig);
   if (response.ok) {
-    const data = await response.json()
-    collection.value = data
+    const data = await response.json();
+    collection.value = data;
     for (const collectionField of collection.value.fields) {
       const formattedField = {
         name: collectionField.name,
-        val: null
-      }
-      itemData.value.fields.push(formattedField)
+        val: null,
+      };
+      itemData.value.fields.push(formattedField);
     }
   }
-})
-
+});
 
 const formValidation = () => {
-  let formName = false
+  let formName = false;
   if (itemData.value.name) {
-    formName = true
+    formName = true;
   }
-  let formFields = true
+  let formFields = true;
   for (const field of itemData.value.fields) {
     if (!field.val) {
-      formFields = false
+      formFields = false;
     }
   }
-  return formName && formFields
-}
+  return formName && formFields;
+};
 
 const createItem = async (e) => {
-  e.preventDefault()
+  e.preventDefault();
   if (formValidation()) {
-    const itemsUrl = API + `/${username}/collections/${collection_id}/items`
-    const body = JSON.stringify(itemData.value)
+    const itemsUrl = API + `/${username}/collections/${collection_id}/items`;
+    const body = JSON.stringify(itemData.value);
     const fetchConfig = {
-      method: 'post',
+      method: "post",
       body: body,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-      }
-    }
-    const response = await fetch(itemsUrl, fetchConfig)
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    const response = await fetch(itemsUrl, fetchConfig);
     if (response.ok) {
-      const data = await response.json()
-      router.push(`/collections/${collection_id}/items/${data.id}`)
+      const data = await response.json();
+      router.push(`/collections/${collection_id}/items/${data.id}`);
     }
   } else {
-    errorMessage.value = "Please ensure all fields are completed"
+    errorMessage.value = "Please ensure all fields are completed";
   }
-}
+};
 </script>
 
 <template>
@@ -94,7 +92,11 @@ const createItem = async (e) => {
           required
         />
         <h1 class="new-item-fields-header">Item Fields</h1>
-        <ul class="new-item-fields" v-if="collection" v-for="(_, index) in collection.fields">
+        <ul
+          class="new-item-fields"
+          v-if="collection"
+          v-for="(_, index) in collection.fields"
+        >
           <ItemField
             :fieldDataType="collection.fields[index].data_type"
             v-model="itemData.fields[index]"

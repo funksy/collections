@@ -1,31 +1,31 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import router from '../../router';
-import { useUser } from '../../store/UserStore';
-import Collection from './Collection.vue';
+import { ref, onMounted } from "vue";
+import router from "../../router";
+import { useUser } from "../../store/UserStore";
+import Collection from "./Collection.vue";
 
-const userStore = useUser()
-const username = userStore.userData.username
-const token = userStore.token.access_token
-const API = import.meta.env.VITE_API_HOST
+const userStore = useUser();
+const username = userStore.userData.username;
+const token = userStore.token.access_token;
+const API = import.meta.env.VITE_API_HOST;
 
-const collections = ref(null)
+const collections = ref(null);
 
 onMounted(async () => {
-  const collectionsUrl = API + `/${username}/collections`
+  const collectionsUrl = API + `/${username}/collections`;
   const fetchConfig = {
-    method: 'get',
+    method: "get",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(collectionsUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(collectionsUrl, fetchConfig);
   if (response.ok) {
-      const data = await response.json()
-      collections.value = data.collections
+    const data = await response.json();
+    collections.value = data.collections;
   }
-})
+});
 </script>
 
 <template>
@@ -33,9 +33,7 @@ onMounted(async () => {
     <div class="collections">
       <template v-if="collections">
         <div v-for="(_, index) in collections">
-          <Collection
-            v-model="collections[index]"
-          />
+          <Collection v-model="collections[index]" />
         </div>
       </template>
     </div>

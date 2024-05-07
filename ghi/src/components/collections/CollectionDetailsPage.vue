@@ -1,53 +1,52 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import router from '../../router';
-import { useUser } from '../../store/UserStore';
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import router from "../../router";
+import { useUser } from "../../store/UserStore";
 
-const userStore = useUser()
-const username = userStore.userData.username
-const token = userStore.token.access_token
-const API = import.meta.env.VITE_API_HOST
-const route = useRoute()
-const collection_id = route.params.collection_id
+const userStore = useUser();
+const username = userStore.userData.username;
+const token = userStore.token.access_token;
+const API = import.meta.env.VITE_API_HOST;
+const route = useRoute();
+const collection_id = route.params.collection_id;
 
-const collection = ref(null)
-const errorMessage = ref(null)
-
+const collection = ref(null);
+const errorMessage = ref(null);
 
 onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
+  const collectionUrl = API + `/${username}/collections/${collection_id}`;
   const fetchConfig = {
-    method: 'get',
+    method: "get",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(collectionUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(collectionUrl, fetchConfig);
   if (response.ok) {
-    const data = await response.json()
-    collection.value = data
+    const data = await response.json();
+    collection.value = data;
   }
-})
+});
 
 const deleteCollection = async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`
+  const collectionUrl = API + `/${username}/collections/${collection_id}`;
   const fetchConfig = {
-    method: 'delete',
+    method: "delete",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(collectionUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(collectionUrl, fetchConfig);
   if (response.ok) {
-    router.push('/')
+    router.push("/");
   } else {
-    const data = await response.json()
-    errorMessage.value = data.detail
+    const data = await response.json();
+    errorMessage.value = data.detail;
   }
-}
+};
 </script>
 
 <template>
@@ -58,27 +57,31 @@ const deleteCollection = async () => {
           <h1>{{ collection.name }}</h1>
         </div>
         <div class="collection-details-actions">
-        <button
-          class="collection-details-update-button"
-          @click="router.push(`/collections/${collection_id}/update`)"
-        >
-          Change Structure
-        </button>
-        <button
-          class="collection-details-delete-button"
-          @click="deleteCollection"
-        >
-          Delete Collection
-        </button>
-      </div>
+          <button
+            class="collection-details-update-button"
+            @click="router.push(`/collections/${collection_id}/update`)"
+          >
+            Change Structure
+          </button>
+          <button
+            class="collection-details-delete-button"
+            @click="deleteCollection"
+          >
+            Delete Collection
+          </button>
+        </div>
         <div
           class="collection-details-fields"
           v-for="field in collection.fields"
         >
           <h2 class="collection-details-field-name">{{ field.name }}</h2>
           <ul>
-            <li class="collection-details-field-details">Data Type: {{ field.data_type }}</li>
-            <li class="collection-details-field-details">Required: {{ field.required }}</li>
+            <li class="collection-details-field-details">
+              Data Type: {{ field.data_type }}
+            </li>
+            <li class="collection-details-field-details">
+              Required: {{ field.required }}
+            </li>
           </ul>
         </div>
         <button
@@ -130,7 +133,7 @@ const deleteCollection = async () => {
   flex-direction: column;
   border: 2px solid orange;
   border-radius: 4px;
-  margin:16px;
+  margin: 16px;
   padding: 8px;
 }
 

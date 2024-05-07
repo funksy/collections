@@ -1,13 +1,13 @@
 <script setup>
-import router from './router';
-import { useUser } from './store/UserStore';
-import NavBar from './components/nav/NavBar.vue'
-import NavTree from './components/nav/NavTree.vue';
+import router from "./router";
+import { useUser } from "./store/UserStore";
+import NavBar from "./components/nav/NavBar.vue";
+import NavTree from "./components/nav/NavTree.vue";
 
-const userStore = useUser()
+const userStore = useUser();
 
 if (!userStore.isLoggedIn) {
-  router.push('/login')
+  router.push("/login");
 }
 </script>
 

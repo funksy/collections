@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from 'vue';
-import { useUser } from '../../store/UserStore';
-import CollectionField from './CollectionField.vue'
-import router from '../../router';
+import { ref } from "vue";
+import { useUser } from "../../store/UserStore";
+import CollectionField from "./CollectionField.vue";
+import router from "../../router";
 
-const userStore = useUser()
-const username = userStore.userData.username
-const token = userStore.token.access_token
-const API = import.meta.env.VITE_API_HOST
+const userStore = useUser();
+const username = userStore.userData.username;
+const token = userStore.token.access_token;
+const API = import.meta.env.VITE_API_HOST;
 
 const collectionData = ref({
   name: null,
@@ -15,62 +15,62 @@ const collectionData = ref({
     {
       name: null,
       data_type: null,
-      required: false
-    }
-  ]
-})
-const errorMessage = ref(null)
+      required: false,
+    },
+  ],
+});
+const errorMessage = ref(null);
 
 const formValidation = () => {
-  let formName = false
+  let formName = false;
   if (collectionData.value.name) {
-    formName = true
+    formName = true;
   } else {
-    console.log('no form name')
+    console.log("no form name");
   }
-  let formFields = true
+  let formFields = true;
   for (const field of collectionData.value.fields) {
     if (!field.name || !field.data_type) {
-      formFields = false
-      console.log('something about fields failed')
+      formFields = false;
+      console.log("something about fields failed");
     }
   }
-  return formName && formFields
-}
+  return formName && formFields;
+};
 
 const addField = () => {
   collectionData.value.fields.push({
     name: null,
     data_type: null,
-    required: false
-  })
-}
+    required: false,
+  });
+};
 const removeField = () => {
-  collectionData.value.fields.pop()
-}
+  collectionData.value.fields.pop();
+};
 
 const createCollection = async (e) => {
-  e.preventDefault()
+  e.preventDefault();
   if (formValidation()) {
-    const collectionsUrl = API + `/${username}/collections`
-    const body = JSON.stringify(collectionData.value)
+    const collectionsUrl = API + `/${username}/collections`;
+    const body = JSON.stringify(collectionData.value);
     const fetchConfig = {
-      method: 'post',
+      method: "post",
       body: body,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-      }
-    }
-    const response = await fetch(collectionsUrl, fetchConfig)
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    const response = await fetch(collectionsUrl, fetchConfig);
     if (response.ok) {
-      const data = await response.json()
-      router.push(`/collections/${data.id}`)
+      const data = await response.json();
+      router.push(`/collections/${data.id}`);
     }
   } else {
-    errorMessage.value = "Please ensure all fields are completed"
+    errorMessage.value = "Please ensure all fields are completed";
   }
-}
+};
 </script>
 
 <template>
@@ -85,7 +85,10 @@ const createCollection = async (e) => {
           required
         />
         <h1 class="new-collection-fields-header">Collection Fields</h1>
-        <ul class="new-collection-fields" v-for="(_, index) in collectionData.fields">
+        <ul
+          class="new-collection-fields"
+          v-for="(_, index) in collectionData.fields"
+        >
           <CollectionField
             v-model="collectionData.fields[index]"
             :index="index"

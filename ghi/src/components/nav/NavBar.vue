@@ -1,11 +1,11 @@
 <script setup>
-import Title from './Title.vue';
-import NavLinks from './NavLinks.vue';
+import Title from "./Title.vue";
+import NavLinks from "./NavLinks.vue";
 </script>
 
 <template>
   <nav class="nav-bar">
-    <Title/>
+    <Title />
     <NavLinks />
   </nav>
 </template>

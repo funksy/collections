@@ -1,37 +1,41 @@
 <script setup>
-import { ref, defineModel, onMounted } from 'vue';
-import router from '../../router';
-import { useUser } from '../../store/UserStore';
-import { useRoute } from 'vue-router';
+import { ref, defineModel, onMounted } from "vue";
+import router from "../../router";
+import { useUser } from "../../store/UserStore";
+import { useRoute } from "vue-router";
 
-const userStore = useUser()
-const username = userStore.userData.username
-const token = userStore.token.access_token
-const API = import.meta.env.VITE_API_HOST
-const itemCount = ref(0)
+const userStore = useUser();
+const username = userStore.userData.username;
+const token = userStore.token.access_token;
+const API = import.meta.env.VITE_API_HOST;
+const itemCount = ref(0);
 
-const collection = defineModel()
+const collection = defineModel();
 
 onMounted(async () => {
-  const itemsUrl = API + `/${username}/collections/${collection.value.id}/items/count`
+  const itemsUrl =
+    API + `/${username}/collections/${collection.value.id}/items/count`;
   const fetchConfig = {
-    method: 'get',
+    method: "get",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(itemsUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(itemsUrl, fetchConfig);
   if (response.ok) {
-      const data = await response.json()
-      itemCount.value = data.count
+    const data = await response.json();
+    itemCount.value = data.count;
   }
-})
+});
 </script>
 
 <template>
   <div class="collection-wrapper">
-    <div class="collection-data" @click="router.push(`/collections/${collection.id}/items`)">
+    <div
+      class="collection-data"
+      @click="router.push(`/collections/${collection.id}/items`)"
+    >
       <h1 class="collection-data-name">{{ collection.name }}</h1>
       <h2 class="collection-data-entries">Entries: {{ itemCount }}</h2>
     </div>
@@ -48,7 +52,7 @@ onMounted(async () => {
 .collection-wrapper {
   display: flex;
   flex-direction: column;
-  margin: 20px;  
+  margin: 20px;
   width: 12rem;
 }
 

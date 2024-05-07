@@ -7,82 +7,88 @@ import {
   onMounted,
   onBeforeUnmount,
   watch,
-} from 'vue';
+} from "vue";
 
-const dataType = defineModel()
+const dataType = defineModel();
 const props = defineProps({
   options: {
     type: Array,
-    required: true
+    required: true,
   },
   placeholder: {
-    type: String
-  }  
-})
+    type: String,
+  },
+});
 const optionMap = {
-  "str": "String",
-  "int": "Number",
-  "bool": "True/False",
-  "true": "True",
-  "false": "False",
-}
-const selectedOption = ref(null)
-const isDropdownVisible = ref(false)
-const dropdown = ref(null)
+  str: "String",
+  int: "Number",
+  bool: "True/False",
+  true: "True",
+  false: "False",
+};
+const selectedOption = ref(null);
+const isDropdownVisible = ref(false);
+const dropdown = ref(null);
 
 const toggleOptionSelect = (option) => {
-  dataType.value = option.val
-  selectedOption.value = option
-  isDropdownVisible.value = false
-}
+  dataType.value = option.val;
+  selectedOption.value = option;
+  isDropdownVisible.value = false;
+};
 
 const mappedOption = computed(() => {
-  return (optionMap[dataType.value])
-})
+  return optionMap[dataType.value];
+});
 
 const closeDropdown = (element) => {
   if (!dropdown.value.contains(element.target)) {
-    isDropdownVisible.value = false
+    isDropdownVisible.value = false;
   }
-}
+};
 
 onMounted(() => {
-  window.addEventListener('click', closeDropdown)
-})
+  window.addEventListener("click", closeDropdown);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('click', closeDropdown)
-})
+  window.removeEventListener("click", closeDropdown);
+});
 </script>
 
 <template>
-    <div class="dropdown-wrapper" ref="dropdown">
-      <div
-        class="dropdown-selected-option"
-        @focus="isDropdownVisible = true"
-        tabindex="0"
+  <div
+    class="dropdown-wrapper"
+    ref="dropdown"
+  >
+    <div
+      class="dropdown-selected-option"
+      @focus="isDropdownVisible = true"
+      tabindex="0"
+    >
+      <span v-if="dataType !== null">
+        {{ mappedOption }}
+      </span>
+      <span
+        v-else
+        v-bind:style="{ opacity: 0.5 }"
       >
-        <span v-if="dataType !== null">
-          {{ mappedOption }}
-        </span>
-        <span v-else v-bind:style="{opacity: 0.5}">
-          {{ props.placeholder }}
-        </span>
-      </div>
+        {{ props.placeholder }}
+      </span>
+    </div>
+    <div
+      class="options-wrapper"
+      v-if="isDropdownVisible"
+    >
       <div
-        class="options-wrapper"
-        v-if="isDropdownVisible"
+        class="option"
+        v-for="(option, index) in options"
+        :key="index"
+        @click="toggleOptionSelect(option)"
       >
-        <div
-          class="option"
-          v-for="(option, index) in options"
-          :key="index"
-          @click="toggleOptionSelect(option)"
-        >
-          {{ option.display || option }}
-        </div>
+        {{ option.display || option }}
       </div>
     </div>
+  </div>
 </template>
 
 <style>

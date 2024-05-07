@@ -1,54 +1,55 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import router from '../../router';
-import { useUser } from '../../store/UserStore';
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import router from "../../router";
+import { useUser } from "../../store/UserStore";
 
-const userStore = useUser()
-const username = userStore.userData.username
-const token = userStore.token.access_token
-const API = import.meta.env.VITE_API_HOST
-const route = useRoute()
-const collection_id = route.params.collection_id
-const item_id = route.params.item_id
+const userStore = useUser();
+const username = userStore.userData.username;
+const token = userStore.token.access_token;
+const API = import.meta.env.VITE_API_HOST;
+const route = useRoute();
+const collection_id = route.params.collection_id;
+const item_id = route.params.item_id;
 
-const item = ref(null)
-const errorMessage = ref(null)
-
+const item = ref(null);
+const errorMessage = ref(null);
 
 onMounted(async () => {
-  const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
+  const itemUrl =
+    API + `/${username}/collections/${collection_id}/items/${item_id}`;
   const fetchConfig = {
-    method: 'get',
+    method: "get",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(itemUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(itemUrl, fetchConfig);
   if (response.ok) {
-    const data = await response.json()
-    item.value = data
+    const data = await response.json();
+    item.value = data;
   }
-})
+});
 
 const deleteItem = async () => {
-  const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
+  const itemUrl =
+    API + `/${username}/collections/${collection_id}/items/${item_id}`;
   const fetchConfig = {
-    method: 'delete',
+    method: "delete",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-    }
-  }
-  const response = await fetch(itemUrl, fetchConfig)
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+  const response = await fetch(itemUrl, fetchConfig);
   if (response.ok) {
-    router.push(`/collections/${collection_id}/items`)
+    router.push(`/collections/${collection_id}/items`);
   } else {
-    const data = await response.json()
-    errorMessage.value = data.detail
+    const data = await response.json();
+    errorMessage.value = data.detail;
   }
-}
+};
 </script>
 
 <template>
@@ -59,27 +60,29 @@ const deleteItem = async () => {
           <h1>{{ item.name }}</h1>
         </div>
         <div class="item-details-actions">
-        <button
-          class="item-details-update-button"
-          @click="router.push(`/collections/${collection_id}/items/${item_id}/update`)"
-        >
-          Update Item
-        </button>
-        <button
-          class="item-details-delete-button"
-          @click="deleteItem"
-        >
-          Delete Item
-        </button>
-      </div>
+          <button
+            class="item-details-update-button"
+            @click="
+              router.push(
+                `/collections/${collection_id}/items/${item_id}/update`
+              )
+            "
+          >
+            Update Item
+          </button>
+          <button
+            class="item-details-delete-button"
+            @click="deleteItem"
+          >
+            Delete Item
+          </button>
+        </div>
         <div
           class="item-details-fields"
           v-for="field in item.fields"
         >
           <div class="item-details-field-wrapper">
-            <h2 
-              class="item-details-field-name"
-            >
+            <h2 class="item-details-field-name">
               {{ field.name }}:
               <span class="item-details-field-value">{{ field.val }}</span>
             </h2>
@@ -129,7 +132,7 @@ const deleteItem = async () => {
   flex-direction: column;
   border: 2px solid orange;
   border-radius: 4px;
-  margin:16px;
+  margin: 16px;
   padding: 8px;
 }
 

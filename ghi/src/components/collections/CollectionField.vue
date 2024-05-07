@@ -1,22 +1,22 @@
 <script setup>
-import { ref, defineProps, defineModel } from 'vue'
-import DataTypeDropdown from '../common/DataTypeDropdown.vue'
+import { ref, defineProps, defineModel } from "vue";
+import DataTypeDropdown from "../common/DataTypeDropdown.vue";
 
-const collectionFields = defineModel()
+const collectionFields = defineModel();
 const dropdownOptions = ref([
   {
-    display: 'String',
-    val: 'str'
+    display: "String",
+    val: "str",
   },
   {
-    display: 'Number',
-    val: 'int'
+    display: "Number",
+    val: "int",
   },
   {
-    display: 'True/False',
-    val: 'bool'
-  }
-])
+    display: "True/False",
+    val: "bool",
+  },
+]);
 </script>
 
 <template class="collection-fields-wrapper">
@@ -35,7 +35,12 @@ const dropdownOptions = ref([
       v-model="collectionFields.data_type"
     />
     <div class="required-checkbox-wrapper">
-      <input id="required-checkbox" class="required-checkbox-button" type="checkbox" v-model="collectionFields.required">
+      <input
+        id="required-checkbox"
+        class="required-checkbox-button"
+        type="checkbox"
+        v-model="collectionFields.required"
+      />
       <label class="required-checkbox-label">Field required?</label>
     </div>
   </form>

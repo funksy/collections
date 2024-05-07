@@ -1,20 +1,20 @@
 <script setup>
-import { ref, defineProps, defineModel } from 'vue';
-import DataTypeDropdown from '../common/DataTypeDropdown.vue'
+import { ref, defineProps, defineModel } from "vue";
+import DataTypeDropdown from "../common/DataTypeDropdown.vue";
 
-const field = defineModel()
-const props = defineProps(['fieldDataType'])
-const dataType = props.fieldDataType
+const field = defineModel();
+const props = defineProps(["fieldDataType"]);
+const dataType = props.fieldDataType;
 const dropdownOptions = ref([
   {
-    display: 'True',
-    val: true
+    display: "True",
+    val: true,
   },
   {
-    display: 'False',
-    val: false
-  }
-])
+    display: "False",
+    val: false,
+  },
+]);
 </script>
 
 <template>

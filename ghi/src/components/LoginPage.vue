@@ -1,23 +1,22 @@
 <script setup>
-import { ref } from 'vue';
-import { useUser } from '../store/UserStore'
+import { ref } from "vue";
+import { useUser } from "../store/UserStore";
 
-const userStore = useUser()
-const username = ref(null)
-const password = ref(null)
-const errorMessage = ref(null)
+const userStore = useUser();
+const username = ref(null);
+const password = ref(null);
+const errorMessage = ref(null);
 
 async function loginUser(e) {
-  e.preventDefault()
+  e.preventDefault();
   if (username.value && password.value) {
-    const response = await userStore.loginUser(username.value, password.value)
+    const response = await userStore.loginUser(username.value, password.value);
     if (response instanceof Error) {
-      errorMessage.value = response.message
+      errorMessage.value = response.message;
     }
   } else {
-    errorMessage.value = "please provide a username and password"
+    errorMessage.value = "please provide a username and password";
   }
-  
 }
 </script>
 
@@ -42,11 +41,17 @@ async function loginUser(e) {
         <button
           class="login-form-button"
           type="submit"
-          @click="loginUser">
-            Login
-          </button>
+          @click="loginUser"
+        >
+          Login
+        </button>
       </form>
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <p
+        v-if="errorMessage"
+        class="error-message"
+      >
+        {{ errorMessage }}
+      </p>
     </div>
   </div>
 </template>
