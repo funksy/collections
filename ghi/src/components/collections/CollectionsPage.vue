@@ -35,7 +35,6 @@ onMounted(async () => {
         <div v-for="(_, index) in collections">
           <Collection
             v-model="collections[index]"
-            :index="index"
           />
         </div>
       </template>
@@ -76,5 +75,11 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.new-collection-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 </style>

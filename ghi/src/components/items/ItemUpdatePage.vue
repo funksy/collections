@@ -54,7 +54,6 @@ const updateItem = async (e) => {
 }
 
 const getItem = async () => {
-  console.log('test')
   const itemUrl = API + `/${username}/collections/${collection_id}/items/${item_id}`
   const fetchConfig = {
     method: 'get',
@@ -189,6 +188,12 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.reset-item-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .item-update-button {
@@ -200,6 +205,12 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.item-update-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .error-message {

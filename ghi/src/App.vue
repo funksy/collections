@@ -2,6 +2,7 @@
 import router from './router';
 import { useUser } from './store/UserStore';
 import NavBar from './components/nav/NavBar.vue'
+import NavTree from './components/nav/NavTree.vue';
 
 const userStore = useUser()
 
@@ -13,6 +14,7 @@ if (!userStore.isLoggedIn) {
 <template>
   <div class="app-wrapper">
     <NavBar />
+    <NavTree />
     <RouterView />
   </div>
 </template>

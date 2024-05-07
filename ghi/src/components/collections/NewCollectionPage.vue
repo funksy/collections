@@ -189,6 +189,12 @@ const createCollection = async (e) => {
   border-radius: 4px;
   background-color: lightgray;
   font-size: smaller;
+  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.25);
+}
+
+.new-collection-remove-field-button:hover {
+  transform: scale(1.01);
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
 .new-collection-add-field-button {
@@ -200,6 +206,12 @@ const createCollection = async (e) => {
   border-radius: 4px;
   background-color: lightgray;
   font-size: smaller;
+  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.25);
+}
+
+.new-collection-add-field-button:hover {
+  transform: scale(1.01);
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
 .collection-create-button {
@@ -211,6 +223,12 @@ const createCollection = async (e) => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.collection-create-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .error-message {

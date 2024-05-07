@@ -159,6 +159,7 @@ const deleteCollection = async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
 .collection-details-delete-button {
@@ -170,6 +171,7 @@ const deleteCollection = async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
 .collection-items-button {
@@ -181,6 +183,22 @@ const deleteCollection = async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.collection-details-update-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.collection-details-delete-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.collection-items-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .error-message {

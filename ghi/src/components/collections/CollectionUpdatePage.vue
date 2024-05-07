@@ -205,6 +205,7 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-size: smaller;
+  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.25);
 }
 
 .add-field-button {
@@ -216,6 +217,17 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-size: smaller;
+  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.25);
+}
+
+.remove-field-button:hover {
+  transform: scale(1.01);
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.add-field-button:hover {
+  transform: scale(1.01);
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
 .reset-collection-button {
@@ -227,6 +239,7 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
 .collection-update-button {
@@ -238,6 +251,17 @@ onMounted(async () => {
   border-radius: 4px;
   background-color: lightgray;
   font-weight: bold;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.collection-update-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.reset-collection-button:hover {
+  transform: scale(1.01);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .error-message {

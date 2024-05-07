@@ -30,29 +30,69 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="collection-wrapper" @click="router.push(`/collections/${collection.id}`)">
-    <h1 class="collection-name">{{ collection.name }}</h1>
-    <h2>Entries: {{ itemCount }}</h2>
+  <div class="collection-wrapper">
+    <div class="collection-data" @click="router.push(`/collections/${collection.id}/items`)">
+      <h1 class="collection-data-name">{{ collection.name }}</h1>
+      <h2 class="collection-data-entries">Entries: {{ itemCount }}</h2>
+    </div>
+    <button
+      class="collection-data-button"
+      @click="router.push(`/collections/${collection.id}`)"
+    >
+      View/Update Collection Structure
+    </button>
   </div>
 </template>
 
 <style>
 .collection-wrapper {
-  margin: 20px;
-  padding: 10px;  
+  display: flex;
+  flex-direction: column;
+  margin: 20px;  
+  width: 12rem;
+}
+
+.collection-data {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  width: 100%;
+  height: 6rem;
   border: 2px solid orange;
   border-radius: 4px;
-  width: 12rem;
   cursor: pointer;
 }
 
-.collection-wrapper:hover {
+.collection-data:hover {
   transform: scale(1.01);
-  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-.collection-name {
+.collection-data-name {
+  margin-bottom: 28px;
+  font-size: large;
+  text-align: center;
   text-transform: uppercase;
   font-weight: bold;
+}
+
+.collection-data-entries {
+  font-size: small;
+}
+
+.collection-data-button {
+  place-self: center;
+  width: 10rem;
+  margin-top: 16px;
+  padding: 2px;
+  background-color: lightgray;
+  font-size: x-small;
+  border: 1px solid black;
+  border-radius: 4px;
+}
+
+.collection-data-button:hover {
+  transform: scale(1.01);
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 </style>
