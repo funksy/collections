@@ -43,7 +43,7 @@ onMounted(async () => {
       class="collection-data-button"
       @click="router.push(`/collections/${collection.id}`)"
     >
-      View/Update Collection Structure
+      Update/Delete Collection
     </button>
   </div>
 </template>
@@ -90,7 +90,7 @@ onMounted(async () => {
   margin-top: 16px;
   padding: 2px;
   background-color: lightgray;
-  font-size: x-small;
+  font-size: small;
   border: 1px solid black;
   border-radius: 4px;
 }

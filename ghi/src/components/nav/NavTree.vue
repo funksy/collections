@@ -74,7 +74,7 @@ const getItem = async (item_id, collection_id) => {
     <div>
       <NavLink
         class="nav-tree-link"
-        name="Collections"
+        name="My Collections"
         path="/"
       />
     </div>
@@ -100,5 +100,12 @@ const getItem = async (item_id, collection_id) => {
   display: flex;
   flex-direction: row;
   width: 100%;
+  max-width: 72rem;
+}
+
+.nav-tree-link {
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: underline;
 }
 </style>
