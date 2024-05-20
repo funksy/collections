@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import router from "../../router";
+import { getCollection, deleteCollection } from "../../functions/collections";
 import { useUser } from "../../store/UserStore";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection_id = route.params.collection_id;
 
@@ -15,36 +15,23 @@ const collection = ref(null);
 const errorMessage = ref(null);
 
 onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(collectionUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    collection.value = data;
-  }
+  collection.value = await getCollection(
+    username.value,
+    collection_id,
+    access_token.value
+  );
 });
 
-const deleteCollection = async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`;
-  const fetchConfig = {
-    method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(collectionUrl, fetchConfig);
-  if (response.ok) {
+const requestDelete = async () => {
+  const response = await deleteCollection(
+    username.value,
+    collection_id,
+    access_token.value
+  );
+  if (response.result) {
     router.push("/");
   } else {
-    const data = await response.json();
-    errorMessage.value = data.detail;
+    errorMessage.value = response.error;
   }
 };
 </script>
@@ -65,7 +52,7 @@ const deleteCollection = async () => {
           </button>
           <button
             class="collection-details-delete-button"
-            @click="deleteCollection"
+            @click="requestDelete"
           >
             Delete Collection
           </button>

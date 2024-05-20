@@ -1,13 +1,13 @@
 <script setup>
 import { ref } from "vue";
+import { storeToRefs } from "pinia";
+import { createCollection } from "../../functions/collections";
 import { useUser } from "../../store/UserStore";
 import CollectionField from "./CollectionField.vue";
 import router from "../../router";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 
 const collectionData = ref({
   name: null,
@@ -49,23 +49,18 @@ const removeField = () => {
   collectionData.value.fields.pop();
 };
 
-const createCollection = async (e) => {
+const submitCollection = async (e) => {
   e.preventDefault();
   if (formValidation()) {
-    const collectionsUrl = API + `/${username}/collections`;
-    const body = JSON.stringify(collectionData.value);
-    const fetchConfig = {
-      method: "post",
-      body: body,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch(collectionsUrl, fetchConfig);
-    if (response.ok) {
-      const data = await response.json();
-      router.push(`/collections/${data.id}`);
+    const response = await createCollection(
+      username.value,
+      collectionData.value,
+      access_token.value
+    );
+    if (response.status) {
+      router.push(`/collections/${response.collection_id}`);
+    } else {
+      errorMessage.value = "Something went wrong.  Please try again";
     }
   } else {
     errorMessage.value = "Please ensure all fields are completed";
@@ -118,7 +113,7 @@ const createCollection = async (e) => {
         <button
           type="submit"
           class="collection-create-button"
-          @click="createCollection"
+          @click="submitCollection"
         >
           Create Collection
         </button>

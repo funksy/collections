@@ -1,13 +1,14 @@
 <script setup>
 import { ref, computed, watch } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
+import { getCollection } from "../../functions/collections";
+import { getItem } from "../../functions/items";
 import { useUser } from "../../store/UserStore";
 import NavLink from "./NavLink.vue";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection = ref({ name: null, path: null });
 const item = ref({ name: null, path: null });
@@ -18,55 +19,36 @@ const routeParams = computed(() => {
 
 watch(routeParams, async () => {
   if ("collection_id" in routeParams.value) {
-    getCollection(routeParams.value.collection_id);
-  } else {
-    collection.value = { name: null, path: null };
-  }
-  if ("item_id" in routeParams.value) {
-    getItem(routeParams.value.item_id, routeParams.value.collection_id);
-  } else {
-    item.value = { name: null, path: null };
-  }
-});
-
-const getCollection = async (collection_id) => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(collectionUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
+    const collection_id = routeParams.value.collection_id;
+    const data = await getCollection(
+      username.value,
+      collection_id,
+      access_token.value
+    );
     collection.value = {
       name: data.name,
       path: `/collections/${collection_id}/items`,
     };
+  } else {
+    collection.value = { name: null, path: null };
   }
-};
-
-const getItem = async (item_id, collection_id) => {
-  const itemUrl =
-    API + `/${username}/collections/${collection_id}/items/${item_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(itemUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
+  if ("item_id" in routeParams.value) {
+    const collection_id = routeParams.value.collection_id;
+    const item_id = routeParams.value.item_id;
+    const data = await getItem(
+      username.value,
+      collection_id,
+      item_id,
+      access_token.value
+    );
     item.value = {
       name: data.name,
       path: `/collections/${collection_id}/items/${item_id}`,
     };
+  } else {
+    item.value = { name: null, path: null };
   }
-};
+});
 </script>
 
 <template>

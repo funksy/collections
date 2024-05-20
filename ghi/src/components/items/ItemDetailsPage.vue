@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
+import { deleteItem, getItem } from "../../functions/items";
 import router from "../../router";
 import { useUser } from "../../store/UserStore";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection_id = route.params.collection_id;
 const item_id = route.params.item_id;
@@ -16,38 +16,25 @@ const item = ref(null);
 const errorMessage = ref(null);
 
 onMounted(async () => {
-  const itemUrl =
-    API + `/${username}/collections/${collection_id}/items/${item_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(itemUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    item.value = data;
-  }
+  item.value = await getItem(
+    username.value,
+    collection_id,
+    item_id,
+    access_token.value
+  );
 });
 
-const deleteItem = async () => {
-  const itemUrl =
-    API + `/${username}/collections/${collection_id}/items/${item_id}`;
-  const fetchConfig = {
-    method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(itemUrl, fetchConfig);
-  if (response.ok) {
+const requestDelete = async () => {
+  const response = await deleteItem(
+    username.value,
+    collection_id,
+    item_id,
+    access_token.value
+  );
+  if (response.result) {
     router.push(`/collections/${collection_id}/items`);
   } else {
-    const data = await response.json();
-    errorMessage.value = data.detail;
+    errorMessage.value = response.error;
   }
 };
 </script>
@@ -72,7 +59,7 @@ const deleteItem = async () => {
           </button>
           <button
             class="item-details-delete-button"
-            @click="deleteItem"
+            @click="requestDelete"
           >
             Delete Item
           </button>

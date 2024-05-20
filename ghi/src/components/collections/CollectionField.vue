@@ -1,11 +1,5 @@
 <script setup>
 import { ref, defineModel } from "vue";
-import {
-    Listbox,
-    ListboxButton,
-    ListboxOptions,
-    ListboxOption,
-  } from '@headlessui/vue'
 import DataTypeDropdown from "../common/DataTypeDropdown.vue";
 
 const collectionFields = defineModel();

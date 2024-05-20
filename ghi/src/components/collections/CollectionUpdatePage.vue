@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
+import { getCollection, updateCollection } from "../../functions/collections";
 import { useUser } from "../../store/UserStore";
 import CollectionField from "./CollectionField.vue";
 import router from "../../router";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection_id = route.params.collection_id;
 
@@ -37,54 +37,49 @@ const newField = () => {
     required: false,
   });
 };
+
 const removeField = (index) => {
-  collectionData.value.fields.splice(index, 1);
-  if (collectionData.value.fields.length < 1) {
-    newField();
+  if (collectionData.value.fields.length <= 1) {
     minumumCollectionField.value = "You must have at least 1 field defined";
+  } else {
+    collectionData.value.fields.splice(index, 1);
   }
 };
 
-const updateCollection = async (e) => {
+const sendUpdate = async (e) => {
   e.preventDefault();
   if (formValidation()) {
-    const collectionsUrl = API + `/${username}/collections/${collection_id}`;
-    const body = JSON.stringify(collectionData.value);
-    const fetchConfig = {
-      method: "put",
-      body: body,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch(collectionsUrl, fetchConfig);
-    if (response.ok) {
+    const result = await updateCollection(
+      username.value,
+      collection_id,
+      collectionData.value,
+      access_token.value
+    );
+    if (result) {
       router.push(`/collections/${collection_id}`);
+    } else {
+      errorMessage.value = "Something went wrong.  Please try again";
     }
   } else {
     errorMessage.value = "Please ensure all fields are completed";
   }
 };
 
-const getCollection = async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(collectionUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    collectionData.value = data;
-  }
+const resetData = async () => {
+  collectionData.value = await getCollection(
+    username.value,
+    collection_id,
+    access_token.value
+  );
+  minumumCollectionField.value = null;
 };
 
 onMounted(async () => {
-  getCollection();
+  collectionData.value = await getCollection(
+    username.value,
+    collection_id,
+    access_token.value
+  );
 });
 </script>
 
@@ -130,14 +125,14 @@ onMounted(async () => {
         <button
           type="button"
           class="reset-collection-button"
-          @click="getCollection"
+          @click="resetData"
         >
           Reset Data
         </button>
         <button
           type="submit"
           class="collection-update-button"
-          @click="updateCollection"
+          @click="sendUpdate"
         >
           Update Collection
         </button>

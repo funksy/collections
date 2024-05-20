@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineModel } from "vue";
+import { defineModel } from "vue";
 import { useRoute } from "vue-router";
 import router from "../../router";
 

@@ -1,33 +1,21 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import router from "../../router";
+import { getItems } from "../../functions/items";
 import { useUser } from "../../store/UserStore";
 import Item from "./Item.vue";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection_id = route.params.collection_id;
 
 const items = ref(null);
 
 onMounted(async () => {
-  const itemsUrl = API + `/${username}/collections/${collection_id}/items`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(itemsUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    items.value = data.items;
-  }
+  items.value = await getItems(username, collection_id, access_token);
 });
 </script>
 

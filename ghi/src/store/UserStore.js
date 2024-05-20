@@ -21,7 +21,8 @@ export const useUser = defineStore("users", {
   }),
 
   getters: {
-    userName: (state) => state.userData.username,
+    username: (state) => state.userData.username,
+    access_token: (state) => state.token.access_token
   },
 
   actions: {

@@ -1,14 +1,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import router from "../../router";
+import { getCollection } from "../../functions/collections";
+import { createItem } from "../../functions/items";
 import { useUser } from "../../store/UserStore";
 import ItemField from "./ItemField.vue";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection_id = route.params.collection_id;
 
@@ -20,25 +21,17 @@ const collection = ref(null);
 const errorMessage = ref(null);
 
 onMounted(async () => {
-  const collectionUrl = API + `/${username}/collections/${collection_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(collectionUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    collection.value = data;
-    for (const collectionField of collection.value.fields) {
-      const formattedField = {
-        name: collectionField.name,
-        val: null,
-      };
-      itemData.value.fields.push(formattedField);
-    }
+  collection.value = await getCollection(
+    username.value,
+    collection_id,
+    access_token.value
+  );
+  for (const collectionField of collection.value.fields) {
+    const formattedField = {
+      name: collectionField.name,
+      val: null,
+    };
+    itemData.value.fields.push(formattedField);
   }
 });
 
@@ -56,23 +49,19 @@ const formValidation = () => {
   return formName && formFields;
 };
 
-const createItem = async (e) => {
+const submitItem = async (e) => {
   e.preventDefault();
   if (formValidation()) {
-    const itemsUrl = API + `/${username}/collections/${collection_id}/items`;
-    const body = JSON.stringify(itemData.value);
-    const fetchConfig = {
-      method: "post",
-      body: body,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch(itemsUrl, fetchConfig);
-    if (response.ok) {
-      const data = await response.json();
-      router.push(`/collections/${collection_id}/items/${data.id}`);
+    const response = await createItem(
+      username.value,
+      collection_id,
+      itemData.value,
+      access_token.value
+    );
+    if (response.status) {
+      router.push(`/collections/${collection_id}/items/${response.item_id}`);
+    } else {
+      errorMessage.value = "Something went wrong.  Please try again";
     }
   } else {
     errorMessage.value = "Please ensure all fields are completed";
@@ -105,7 +94,7 @@ const createItem = async (e) => {
         <button
           type="submit"
           class="item-create-button"
-          @click="createItem"
+          @click="submitItem"
         >
           Create Item
         </button>

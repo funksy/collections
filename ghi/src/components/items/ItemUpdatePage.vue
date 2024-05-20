@@ -1,14 +1,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
+import { getCollection } from "../../functions/collections";
+import { getItem, updateItem } from "../../functions/items";
 import { useUser } from "../../store/UserStore";
 import ItemField from "./ItemField.vue";
 import router from "../../router";
 
 const userStore = useUser();
-const username = userStore.userData.username;
-const token = userStore.token.access_token;
-const API = import.meta.env.VITE_API_HOST;
+const { username, access_token } = storeToRefs(userStore);
 const route = useRoute();
 const collection_id = route.params.collection_id;
 const item_id = route.params.item_id;
@@ -31,61 +32,47 @@ const formValidation = () => {
   return formName && formFields;
 };
 
-const updateItem = async (e) => {
+const sendUpdate = async (e) => {
   e.preventDefault();
   if (formValidation()) {
-    const itemUrl =
-      API + `/${username}/collections/${collection_id}/items/${item_id}`;
-    const body = JSON.stringify(itemData.value);
-    const fetchConfig = {
-      method: "put",
-      body: body,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch(itemUrl, fetchConfig);
-    if (response.ok) {
+    const result = await updateItem(
+      username.value,
+      collection_id,
+      item_id,
+      itemData.value,
+      access_token.value
+    );
+    if (result) {
       router.push(`/collections/${collection_id}/items/${item_id}`);
+    } else {
+      errorMessage.value = "Something went wrong.  Please try again";
     }
   } else {
     errorMessage.value = "Please ensure all fields are completed";
   }
 };
 
-const getItem = async () => {
-  const itemUrl =
-    API + `/${username}/collections/${collection_id}/items/${item_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(itemUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    itemData.value = data;
-  }
+const resetItem = async () => {
+  itemData.value = await getItem(
+    username.value,
+    collection_id,
+    item_id,
+    access_token.value
+  );
 };
 
 onMounted(async () => {
-  getItem();
-  const collectionUrl = API + `/${username}/collections/${collection_id}`;
-  const fetchConfig = {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  };
-  const response = await fetch(collectionUrl, fetchConfig);
-  if (response.ok) {
-    const data = await response.json();
-    collectionData.value = data;
-  }
+  itemData.value = await getItem(
+    username.value,
+    collection_id,
+    item_id,
+    access_token.value
+  );
+  collectionData.value = await getCollection(
+    username.value,
+    collection_id,
+    access_token.value
+  );
 });
 </script>
 
@@ -111,14 +98,14 @@ onMounted(async () => {
         <button
           type="button"
           class="reset-item-button"
-          @click="getItem"
+          @click="resetItem"
         >
           Reset Data
         </button>
         <button
           type="submit"
           class="item-update-button"
-          @click="updateItem"
+          @click="sendUpdate"
         >
           Update item
         </button>
