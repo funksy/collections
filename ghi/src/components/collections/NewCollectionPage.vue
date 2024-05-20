@@ -85,14 +85,20 @@ const createCollection = async (e) => {
           required
         />
         <h1 class="new-collection-fields-header">Collection Fields</h1>
-        <ul
-          class="new-collection-fields"
-          v-for="(_, index) in collectionData.fields"
-        >
-          <CollectionField
-            v-model="collectionData.fields[index]"
-            :index="index"
-          />
+        <p style="font-size: x-small; place-self: center">
+          *items always include a "name", so a corresponding field is unneeded
+        </p>
+        <ul>
+          <div
+            class="new-collection-fields"
+            v-for="(_, index) in collectionData.fields"
+          >
+            <CollectionField
+              v-model="collectionData.fields[index]"
+              :index="index"
+              :key="`collection_field_${index}`"
+            />
+          </div>
         </ul>
         <button
           type="button"

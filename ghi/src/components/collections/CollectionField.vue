@@ -1,5 +1,11 @@
 <script setup>
-import { ref, defineProps, defineModel } from "vue";
+import { ref, defineModel } from "vue";
+import {
+    Listbox,
+    ListboxButton,
+    ListboxOptions,
+    ListboxOption,
+  } from '@headlessui/vue'
 import DataTypeDropdown from "../common/DataTypeDropdown.vue";
 
 const collectionFields = defineModel();
@@ -34,7 +40,7 @@ const dropdownOptions = ref([
       :placeholder="'Field Data Type'"
       v-model="collectionFields.data_type"
     />
-    <div class="required-checkbox-wrapper">
+    <!-- <div class="required-checkbox-wrapper">
       <input
         id="required-checkbox"
         class="required-checkbox-button"
@@ -42,7 +48,7 @@ const dropdownOptions = ref([
         v-model="collectionFields.required"
       />
       <label class="required-checkbox-label">Field required?</label>
-    </div>
+    </div> -->
   </form>
 </template>
 

@@ -97,6 +97,7 @@ const getItem = async (item_id, collection_id) => {
 
 <style>
 .nav-tree {
+  place-self: center;
   display: flex;
   flex-direction: row;
   width: 100%;
