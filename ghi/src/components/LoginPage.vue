@@ -1,39 +1,79 @@
 <script setup>
 import { ref } from "vue";
 import { useUser } from "../store/UserStore";
+import Toggle from "./common/Toggle.vue";
 
 const userStore = useUser();
-const username = ref(null);
-const password = ref(null);
+const loginUsername = ref(null);
+const loginPassword = ref(null);
+const signupUsername = ref(null);
+const signupPassword = ref(null);
+const signupPasswordConf = ref(null);
 const errorMessage = ref(null);
+const signup = ref(false);
 
-async function loginUser(e) {
+const loginUser = async (e) => {
   e.preventDefault();
-  if (username.value && password.value) {
-    const response = await userStore.loginUser(username.value, password.value);
+  if (loginUsername.value && loginPassword.value) {
+    const response = await userStore.loginUser(
+      loginUsername.value,
+      loginPassword.value
+    );
     if (response instanceof Error) {
       errorMessage.value = response.message;
     }
   } else {
     errorMessage.value = "please provide a username and password";
   }
-}
+};
+
+const signupUser = async (e) => {
+  e.preventDefault();
+  if (
+    signupUsername.value &&
+    signupPassword.value &&
+    signupPasswordConf.value &&
+    signupPassword.value === signupPasswordConf.value
+  ) {
+    const response = await userStore.createUser(
+      signupUsername.value,
+      signupPassword.value
+    );
+    if (response instanceof Error) {
+      errorMessage.value = response.message;
+    } else {
+      await userStore.loginUser(signupUsername.value, signupPassword.value);
+    }
+  } else if (signupPassword.value !== signupPasswordConf.value) {
+    errorMessage.value = "password and password confirmation do not match";
+  } else {
+    errorMessage.value = "please fill out all fields";
+  }
+};
 </script>
 
 <template>
   <div class="login-page">
     <div class="login-form-wrapper">
-      <h1 class="login-form-header">Login</h1>
-      <form class="login-form">
+      <Toggle
+        class="signup-toggle"
+        v-model="signup"
+        option_a="Login"
+        option_b="Sign Up"
+      />
+      <form
+        v-if="!signup"
+        class="login-form"
+      >
         <input
           class="login-form-field"
-          v-model="username"
+          v-model="loginUsername"
           required
           placeholder="Username"
         />
         <input
           class="login-form-field"
-          v-model="password"
+          v-model="loginPassword"
           type="password"
           required
           placeholder="Password"
@@ -44,6 +84,38 @@ async function loginUser(e) {
           @click="loginUser"
         >
           Login
+        </button>
+      </form>
+      <form
+        v-if="signup"
+        class="login-form"
+      >
+        <input
+          class="login-form-field"
+          v-model="signupUsername"
+          required
+          placeholder="Username"
+        />
+        <input
+          class="login-form-field"
+          v-model="signupPassword"
+          type="password"
+          required
+          placeholder="Password"
+        />
+        <input
+          class="login-form-field"
+          v-model="signupPasswordConf"
+          type="password"
+          required
+          placeholder="Password Confirmation"
+        />
+        <button
+          class="signup-form-button"
+          type="submit"
+          @click="signupUser"
+        >
+          Sign Up
         </button>
       </form>
       <p
@@ -76,9 +148,9 @@ async function loginUser(e) {
   margin: 5px;
 }
 
-.login-form-header {
-  text-align: center;
-  font-weight: bold;
+.signup-toggle {
+  place-self: center;
+  margin: 8px;
 }
 
 .error-message {
@@ -104,6 +176,16 @@ async function loginUser(e) {
 }
 
 .login-form-button {
+  place-self: center;
+  margin: 8px;
+  padding: 4px;
+  border: 1px solid black;
+  border-radius: 4px;
+  width: 8rem;
+  background: lightgray;
+}
+
+.signup-form-button {
   place-self: center;
   margin: 8px;
   padding: 4px;

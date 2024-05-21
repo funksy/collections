@@ -34,6 +34,9 @@ export const useUser = defineStore("users", {
       const response = await fetch(usersUrl, fetchConfig);
       if (response.ok) {
         this.userData = await response.json();
+      } else {
+        const error = await response.json();
+        return new Error(error.detail);
       }
     },
     async loginUser(username, password) {
