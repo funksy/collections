@@ -1,13 +1,5 @@
 <script setup>
-import {
-  ref,
-  computed,
-  defineProps,
-  defineModel,
-  onMounted,
-  onBeforeUnmount,
-  watch,
-} from "vue";
+import { ref, computed, defineModel, onMounted, onBeforeUnmount } from "vue";
 
 const dataType = defineModel();
 const props = defineProps({

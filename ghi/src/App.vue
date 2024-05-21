@@ -1,13 +1,17 @@
 <script setup>
 import router from "./router";
+import Cookies from "js-cookie";
 import { useUser } from "./store/UserStore";
 import NavBar from "./components/nav/NavBar.vue";
 import NavTree from "./components/nav/NavTree.vue";
 
 const userStore = useUser();
+const cookies = Cookies.get("access_token");
 
-if (!userStore.isLoggedIn) {
+if (!cookies) {
   router.push("/login");
+} else {
+  userStore.loginUserWithToken();
 }
 </script>
 

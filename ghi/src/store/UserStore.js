@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useFetch } from "@vueuse/core";
+import Cookies from "js-cookie";
 import router from "../router";
 
 const API = import.meta.env.VITE_API_HOST;
@@ -9,20 +9,19 @@ const usersUrl = API + "/users";
 export const useUser = defineStore("users", {
   state: () => ({
     userData: {
-      id: "66226cb581fcb111844470a5",
-      username: "john",
+      id: null,
+      username: null,
     },
     token: {
-      access_token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MjI2Y2I1ODFmY2IxMTE4NDQ0NzBhNSIsInVzZXJuYW1lIjoiam9obiJ9.qqQ3bZQTflFQAsMKHCfEiwSJShCwbZwzHkyOvIEbuiQ",
-      token_type: "bearer",
+      access_token: null,
+      token_type: null,
     },
-    isLoggedIn: true,
+    isLoggedIn: false,
   }),
 
   getters: {
     username: (state) => state.userData.username,
-    access_token: (state) => state.token.access_token
+    access_token: (state) => state.token.access_token,
   },
 
   actions: {
@@ -49,6 +48,7 @@ export const useUser = defineStore("users", {
       const response = await fetch(tokenUrl, fetchConfig);
       if (response.ok) {
         this.token = await response.json();
+        Cookies.set("access_token", this.token.access_token, { expires: 0.08 });
         await this.getUserData(username);
         this.isLoggedIn = true;
         router.push("/");
@@ -56,6 +56,34 @@ export const useUser = defineStore("users", {
         const error = await response.json();
         return new Error(error.detail);
       }
+    },
+    async loginUserWithToken() {
+      const access_token = Cookies.get("access_token");
+      const fetchConfig = {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+      };
+      const response = await fetch(`${tokenUrl}/current`, fetchConfig);
+      if (response.ok) {
+        const data = await response.json();
+        this.userData = {
+          id: data.id,
+          username: data.username,
+        };
+        this.token = {
+          access_token: access_token,
+          token_type: "bearer",
+        };
+        this.isLoggedIn = true;
+      }
+    },
+    logoutUser() {
+      Cookies.remove("access_token");
+      this.$state = resetState();
+      router.push("/login");
     },
     async getUserData(username) {
       const fetchConfig = {
@@ -69,3 +97,17 @@ export const useUser = defineStore("users", {
     },
   },
 });
+
+const resetState = () => {
+  return {
+    userData: {
+      id: null,
+      username: null,
+    },
+    token: {
+      access_token: null,
+      token_type: null,
+    },
+    isLoggedIn: false,
+  };
+};

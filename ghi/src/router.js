@@ -1,7 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 import LoginPage from "./components/LoginPage.vue";
-import LogoutPage from "./components/LogoutPage.vue";
 
 import CollectionsPage from "./components/collections/CollectionsPage.vue";
 import CollectionDetailsPage from "./components/collections/CollectionDetailsPage.vue";
@@ -15,7 +14,6 @@ import ItemUpdatePage from "./components/items/ItemUpdatePage.vue";
 
 const routes = [
   { path: "/login", component: LoginPage },
-  { path: "/logout", component: LogoutPage },
 
   { path: "/", component: CollectionsPage },
   { path: "/collections/:collection_id", component: CollectionDetailsPage },

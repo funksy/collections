@@ -19,11 +19,13 @@ const { isLoggedIn } = storeToRefs(userStore);
       name="Main"
       path="/"
     />
-    <NavLink
+    <button
       v-if="isLoggedIn"
-      name="Logout"
-      path="/logout"
-    />
+      @click="userStore.logoutUser"
+      style="margin: 16px"
+    >
+      Logout
+    </button>
   </div>
 </template>
 
